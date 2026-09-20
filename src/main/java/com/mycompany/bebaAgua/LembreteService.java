@@ -3,11 +3,30 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.bebaAgua;
-
+import javax.swing.Timer;
 /**
  *
  * @author bruno
  */
 public class LembreteService {
+    private Timer temporizador;
+    PopupLembrete popupLembrete = new PopupLembrete();
+    
+    
+    
+    public LembreteService(){
+        temporizador = new Timer(5000, (e) -> {
+            popupLembrete.setVisible(true);
+            
+            
+        });
+        
+    }
+    public void start(int minutos){
+       int milissegundos = minutos * 60 * 1000;
+       temporizador.setInitialDelay(milissegundos);
+       temporizador.setDelay(milissegundos);
+       temporizador.restart();
+    }
     
 }

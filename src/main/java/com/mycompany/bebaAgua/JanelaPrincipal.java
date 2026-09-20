@@ -12,11 +12,14 @@ import javax.swing.JButton; // Cria botões.
 import javax.swing.JSpinner; // Cria o campo com setas de seleção de valores. Também permite digitar valores.
 import javax.swing.SpinnerNumberModel; //Define as regras numéricas do JSpinner: valor inicial, mínimo, máximo e incremento das setas.
 import java.awt.FlowLayout; // Organiza os componentes em sequência, da esquerda para a direita, passando para outra linha quando falta espaço.
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.ParseException;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+
 
 
 public class JanelaPrincipal extends JFrame {
@@ -29,6 +32,8 @@ public class JanelaPrincipal extends JFrame {
     public void setStatus(String status){
         this.status = status;
     }
+    
+    LembreteService lembreteService = new LembreteService();
     
     // Construtor para a configuração da Janela (titulo, tamanhoJanela e etc).
     public JanelaPrincipal(){
@@ -47,12 +52,12 @@ public class JanelaPrincipal extends JFrame {
     JLabel label2 = new JLabel("Intervalo em minutos: ");
     JLabel label3 = new JLabel("Status: " + getStatus());
     
-    JButton btnInciar = new JButton("Inciar");
+    JButton btnIniciar = new JButton("Inciar");
     JButton btnPausar = new JButton("Pausar");
     JButton btnTestarAlerta = new JButton("Testar alerta");
     
     JSpinner campoIntervalo = new JSpinner();
-    // setar os valores do JSpinner
+    // setar as regras do JSpinner
     SpinnerNumberModel configSpinner = new SpinnerNumberModel(30, 1, 240, 1);
     campoIntervalo.setModel(configSpinner);
     
@@ -86,7 +91,7 @@ public class JanelaPrincipal extends JFrame {
     panel.add(panel5);
     
     // panel3 e panel4 agrupa os botoes no frame
-    panel3.add(btnInciar);
+    panel3.add(btnIniciar);
     panel3.add(btnPausar);
     panel4.add(Box.createVerticalStrut(16));
     panel4.add(btnTestarAlerta);
@@ -97,13 +102,16 @@ public class JanelaPrincipal extends JFrame {
     
     
     // função botao INICIAR
-    btnInciar.addActionListener(event ->{
+    btnIniciar.addActionListener(event ->{
     
     try{
         campoIntervalo.commitEdit();
+        int minutos = (Integer)(campoIntervalo.getValue());
+        lembreteService.start(minutos);
     } catch(java.text.ParseException e){
         e.getErrorOffset();
         JOptionPane.showMessageDialog(this, "Insira valores de 1 a 240!");
+        // volta para o ultimo valor valido
         editor.getTextField().setValue(campoIntervalo.getValue());
         
         return;
@@ -111,5 +119,20 @@ public class JanelaPrincipal extends JFrame {
         
     label3.setText("Status: timer de " + campoIntervalo.getValue() + " minutos ativado");
     });
+    
+   btnTestarAlerta.addActionListener(event -> {
+      btnTestarAlerta.setEnabled(false);
+      PopupLembrete telaPopup = new PopupLembrete();
+      // chama um ouvinte de eventos para a janela telaPopup, ligando o botão "testar alerta" novamente depois da janela ser fechada.
+      telaPopup.addWindowListener(new WindowAdapter(){
+          @Override
+          public void windowClosed(WindowEvent e){
+              btnTestarAlerta.setEnabled(true);
+          }
+          });
+      
+      telaPopup.setVisible(true);
+   }); 
   }
+    
 }
