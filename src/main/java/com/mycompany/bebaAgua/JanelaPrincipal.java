@@ -54,7 +54,9 @@ public class JanelaPrincipal extends JFrame {
     
     JButton btnIniciar = new JButton("Inciar");
     JButton btnPausar = new JButton("Pausar");
-    JButton btnTestarAlerta = new JButton("Testar alerta");
+    btnTestarAlerta = new JButton("Testar alerta");
+    
+    
     
     JSpinner campoIntervalo = new JSpinner();
     // setar as regras do JSpinner
@@ -101,6 +103,7 @@ public class JanelaPrincipal extends JFrame {
     panel5.add(label3);
     
     
+    
     // função botao INICIAR
     btnIniciar.addActionListener(event ->{
     
@@ -108,8 +111,8 @@ public class JanelaPrincipal extends JFrame {
         campoIntervalo.commitEdit();
         int minutos = (Integer)(campoIntervalo.getValue());
         lembreteService.start(minutos);
+        mostrarAlerta();
     } catch(java.text.ParseException e){
-        e.getErrorOffset();
         JOptionPane.showMessageDialog(this, "Insira valores de 1 a 240!");
         // volta para o ultimo valor valido
         editor.getTextField().setValue(campoIntervalo.getValue());
@@ -133,6 +136,25 @@ public class JanelaPrincipal extends JFrame {
       
       telaPopup.setVisible(true);
    }); 
+  
+     
   }
+    private PopupLembrete telaPopup;
+    private JButton btnTestarAlerta;
+    private void mostrarAlerta(){
+        if(telaPopup != null && telaPopup.isShowing()){
+            return;
+        }
+        telaPopup = new PopupLembrete();
+        btnTestarAlerta.setEnabled(false);
+        telaPopup.addWindowListener(new WindowAdapter(){
+          @Override
+          public void windowClosed(WindowEvent e){
+              btnTestarAlerta.setEnabled(true);
+          }
+          });
+        
+        telaPopup.setVisible(true);
+    }
     
 }
