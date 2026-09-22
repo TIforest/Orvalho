@@ -23,6 +23,9 @@ public class LembreteService {
         
     }
     public void start(int minutos){
+       if(minutos < 1 || minutos > 240){
+           throw new IllegalArgumentException("O valor é menor que 1 ou maior que 240!");
+       }
        int milissegundos = minutos * 60 * 1000;
        temporizador.setInitialDelay(milissegundos);
        temporizador.setDelay(milissegundos);

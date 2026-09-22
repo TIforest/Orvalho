@@ -19,19 +19,17 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+
 
 
 
 public class JanelaPrincipal extends JFrame {
-    private String status = "lembretes pausados";
     
-    public String getStatus(){
-        return status;
-    }
-    
-    public void setStatus(String status){
-        this.status = status;
-    }
+ 
     
     LembreteService lembreteService =
         new LembreteService(() -> mostrarAlerta());
@@ -39,6 +37,28 @@ public class JanelaPrincipal extends JFrame {
     
     // Construtor para a configuração da Janela (titulo, tamanhoJanela e etc).
     public JanelaPrincipal(){
+    //Icone do APP
+    java.net.URL recursoIcone = JanelaPrincipal.class.getResource("/imagens/agua.png"); 
+    ImageIcon icone = new ImageIcon(recursoIcone);
+    Image imagem = icone.getImage();
+    
+    if(SystemTray.isSupported()){    
+    TrayIcon iconeBandeja = new TrayIcon(imagem, "Beba água");
+    iconeBandeja.setImageAutoSize(true);
+    SystemTray bandeja = SystemTray.getSystemTray();
+    try{
+    bandeja.add(iconeBandeja);
+        
+    }catch(java.awt.AWTException e){
+        System.out.println(e.getMessage());
+    }
+    }else{
+        System.out.println("Bandeja nao disponivel nesse ambiente");
+    }
+    
+    setIconImage(imagem);
+    
+    
     setTitle("Beba Água");
     setSize(420, 300);
     setLocationRelativeTo(null); //O valor "null" posiciona a janela no centro da tela.
@@ -52,9 +72,9 @@ public class JanelaPrincipal extends JFrame {
     
     JLabel label1 = new JLabel("Lembrete de água");
     JLabel label2 = new JLabel("Intervalo em minutos: ");
-    JLabel label3 = new JLabel("Status: " + getStatus());
+    JLabel label3 = new JLabel("Status: lembretes pausados");
     
-    JButton btnIniciar = new JButton("Inciar");
+    JButton btnIniciar = new JButton("Iniciar");
     JButton btnPausar = new JButton("Pausar");
     btnPausar.setEnabled(false);
     btnTestarAlerta = new JButton("Testar alerta");
@@ -86,7 +106,6 @@ public class JanelaPrincipal extends JFrame {
     panel.add(Box.createVerticalStrut(12));
     panel2.add(label2); // texto da config 
     panel2.add(campoIntervalo); // campo num. da config
-    panel.add(panel5);
     
     this.add(panel);
     panel.add(panel2);
@@ -106,11 +125,15 @@ public class JanelaPrincipal extends JFrame {
     panel5.add(label3);
     
     
-    
     // função botao INICIAR
     btnIniciar.addActionListener(event ->{
-    
+    String textoDigitado;
     try{
+        textoDigitado = editor.getTextField().getText();
+        if(!textoDigitado.matches("[0-9]+")){
+            editor.getTextField().setValue(campoIntervalo.getValue());
+            throw new IllegalArgumentException("Insira apenas números!");
+        }
         campoIntervalo.commitEdit();
         int minutos = (Integer)(campoIntervalo.getValue());
         lembreteService.start(minutos);
@@ -118,6 +141,12 @@ public class JanelaPrincipal extends JFrame {
     } catch(java.text.ParseException e){
         JOptionPane.showMessageDialog(this, "Insira valores de 1 a 240!");
         // volta para o ultimo valor valido
+        editor.getTextField().setValue(campoIntervalo.getValue());
+        
+        return;
+        
+    } catch(IllegalArgumentException i){
+        JOptionPane.showMessageDialog(this, i.getMessage());
         editor.getTextField().setValue(campoIntervalo.getValue());
         
         return;
@@ -142,7 +171,9 @@ public class JanelaPrincipal extends JFrame {
        label3.setText("Status: timer pausado");
    });
      
+        
   }
+   
     private PopupLembrete telaPopup;
     private JButton btnTestarAlerta;
     
@@ -160,6 +191,7 @@ public class JanelaPrincipal extends JFrame {
           });
         
         telaPopup.setVisible(true);
+        
     }
     
 }

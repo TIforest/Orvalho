@@ -11,12 +11,15 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
     public static void main(String [] args){
-        
+    
+    
     SwingUtilities.invokeLater(() -> {
     JanelaPrincipal frame = new JanelaPrincipal();
                
     frame.pack();
     frame.setVisible(true);
     });
+    
+    
   }
 }

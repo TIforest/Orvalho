@@ -6,6 +6,7 @@ package com.mycompany.bebaAgua;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowListener;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -22,7 +23,7 @@ public class PopupLembrete extends JDialog {
         setAlwaysOnTop(true);
         setFocusableWindowState(false);
         
-        setTitle("Hora de beber água!!");
+        setTitle("Lembrete");
         setSize(210, 150);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -32,10 +33,10 @@ public class PopupLembrete extends JDialog {
         JPanel panel2 = new JPanel();
         JLabel label = new JLabel("Hora de beber água!");
         
-        
-        
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Layout VERTICAL
         label.setAlignmentX(0.5f);
+        panel.add(Box.createVerticalStrut(24));
+       
         this.add(panel);
         panel.add(label);
         panel.add(panel2);
