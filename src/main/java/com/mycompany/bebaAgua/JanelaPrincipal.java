@@ -33,7 +33,9 @@ public class JanelaPrincipal extends JFrame {
         this.status = status;
     }
     
-    LembreteService lembreteService = new LembreteService();
+    LembreteService lembreteService =
+        new LembreteService(() -> mostrarAlerta());
+    
     
     // Construtor para a configuração da Janela (titulo, tamanhoJanela e etc).
     public JanelaPrincipal(){
@@ -54,6 +56,7 @@ public class JanelaPrincipal extends JFrame {
     
     JButton btnIniciar = new JButton("Inciar");
     JButton btnPausar = new JButton("Pausar");
+    btnPausar.setEnabled(false);
     btnTestarAlerta = new JButton("Testar alerta");
     
     
@@ -111,7 +114,7 @@ public class JanelaPrincipal extends JFrame {
         campoIntervalo.commitEdit();
         int minutos = (Integer)(campoIntervalo.getValue());
         lembreteService.start(minutos);
-        mostrarAlerta();
+        
     } catch(java.text.ParseException e){
         JOptionPane.showMessageDialog(this, "Insira valores de 1 a 240!");
         // volta para o ultimo valor valido
@@ -119,28 +122,30 @@ public class JanelaPrincipal extends JFrame {
         
         return;
     }
+        btnPausar.setEnabled(true);
+        btnIniciar.setEnabled(false);
+        campoIntervalo.setEnabled(false);
         
-    label3.setText("Status: timer de " + campoIntervalo.getValue() + " minutos ativado");
+    label3.setText("Status: timer de " + campoIntervalo.getValue() + " minuto(s) ativado");
     });
     
    btnTestarAlerta.addActionListener(event -> {
       btnTestarAlerta.setEnabled(false);
-      PopupLembrete telaPopup = new PopupLembrete();
-      // chama um ouvinte de eventos para a janela telaPopup, ligando o botão "testar alerta" novamente depois da janela ser fechada.
-      telaPopup.addWindowListener(new WindowAdapter(){
-          @Override
-          public void windowClosed(WindowEvent e){
-              btnTestarAlerta.setEnabled(true);
-          }
-          });
-      
-      telaPopup.setVisible(true);
+      mostrarAlerta();
    }); 
-  
+    
+   btnPausar.addActionListener(event -> {
+       campoIntervalo.setEnabled(true);
+       btnPausar.setEnabled(false);
+       btnIniciar.setEnabled(true);
+       lembreteService.pausar();
+       label3.setText("Status: timer pausado");
+   });
      
   }
     private PopupLembrete telaPopup;
     private JButton btnTestarAlerta;
+    
     private void mostrarAlerta(){
         if(telaPopup != null && telaPopup.isShowing()){
             return;

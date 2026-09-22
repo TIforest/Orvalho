@@ -10,13 +10,13 @@ import javax.swing.Timer;
  */
 public class LembreteService {
     private Timer temporizador;
-    PopupLembrete popupLembrete = new PopupLembrete();
+    Runnable aoAlertar;
     
     
     
-    public LembreteService(){
+    public LembreteService(Runnable aoAlertar){
         temporizador = new Timer(5000, (e) -> {
-            popupLembrete.setVisible(true);
+            aoAlertar.run();
             
             
         });
@@ -27,6 +27,10 @@ public class LembreteService {
        temporizador.setInitialDelay(milissegundos);
        temporizador.setDelay(milissegundos);
        temporizador.restart();
+    }
+    
+    public void pausar(){
+        temporizador.stop();
     }
     
 }
