@@ -11,6 +11,8 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
     public static void main(String [] args){
+    String pastaUsuario = System.getProperty("user.home");
+    System.out.println(pastaUsuario);
     
     
     SwingUtilities.invokeLater(() -> {
