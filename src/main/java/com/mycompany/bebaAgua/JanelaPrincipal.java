@@ -27,6 +27,7 @@ import java.util.prefs.Preferences;
 import javax.swing.Timer;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
+import javax.swing.JCheckBox;
 
 
 
@@ -42,12 +43,22 @@ public class JanelaPrincipal extends JFrame {
     
     // Construtor para a configuração da Janela (titulo, tamanhoJanela e etc).
     public JanelaPrincipal(){
+        this(false);
+    }
+
+    public JanelaPrincipal(boolean inicioAutomatico){
+        this(inicioAutomatico, new ConfiguracaoIntervalo());
+    }
+
+    JanelaPrincipal(boolean inicioAutomatico, ConfiguracaoIntervalo configuracao){
+    this.configuracaoIntervalo = configuracao;
+    JCheckBox check = new JCheckBox("Iniciar com o Windows");
     //Icone do APP
-    SystemTray bandeja = SystemTray.getSystemTray();
+    SystemTray bandeja = SystemTray.isSupported() ? SystemTray.getSystemTray() : null;
     java.net.URL recursoIcone = JanelaPrincipal.class.getResource("/imagens/agua.png"); 
     ImageIcon icone = new ImageIcon(recursoIcone);
     Image imagem = icone.getImage();
-    TrayIcon iconeBandeja = new TrayIcon(imagem, "Pausa azul");
+    TrayIcon iconeBandeja = bandeja != null ? new TrayIcon(imagem, "Orvalho") : null;
     
     MenuItem menuItem1 = new MenuItem("Abrir");
     MenuItem menuItem2 = new MenuItem("Fechar");
@@ -61,6 +72,7 @@ public class JanelaPrincipal extends JFrame {
     
     try{
     bandeja.add(iconeBandeja);
+    bandejaDisponivel = true;
     iconeBandeja.setPopupMenu(popupMenu);
         
     }catch(java.awt.AWTException e){
@@ -73,10 +85,10 @@ public class JanelaPrincipal extends JFrame {
     setIconImage(imagem);
     
     
-    setTitle("Pausa Azul");
+    setTitle("Orvalho");
     setSize(420, 300);
     setLocationRelativeTo(null); //O valor "null" posiciona a janela no centro da tela.
-    setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Encerra o programa ao fechar o app.
+    setDefaultCloseOperation(bandejaDisponivel ? JFrame.HIDE_ON_CLOSE : JFrame.EXIT_ON_CLOSE);
     
     JPanel panel = new JPanel();
     JPanel panel2  = new JPanel();
@@ -88,6 +100,7 @@ public class JanelaPrincipal extends JFrame {
     JLabel label2 = new JLabel("Intervalo em minutos: ");
     JLabel label3 = new JLabel("Status: lembretes pausados");
     JLabel labelContagem = new JLabel("Próximo alerta: pausado");
+    sincronizarContagem = () -> atualizarContagem(labelContagem);
     // Reserva espaço para o texto não mudar de tamanho durante a contagem.
     int larguraContagem = Math.max(labelContagem.getPreferredSize().width,
             labelContagem.getFontMetrics(labelContagem.getFont()).stringWidth("Próximo alerta: 240:00"));
@@ -106,12 +119,20 @@ public class JanelaPrincipal extends JFrame {
         }
     });
     
-    JButton btnIniciar = new JButton("Iniciar");
+    JButton btnIniciar = new JButton("GITGUBIS");
+    btnIniciar.setName("iniciarLembretes");
     JButton btnPausar = new JButton("Pausar");
     btnPausar.setEnabled(false);
     btnTestarAlerta = new JButton("Testar alerta");
     
-    int minutosSalvos = preferencias.getInt("intervaloMinutos", 30);
+    int minutosSalvos;
+    try {
+        minutosSalvos = configuracaoIntervalo.carregar(preferencias.getInt("intervaloMinutos", 30));
+    } catch (java.io.IOException erro) {
+        minutosSalvos = 30;
+        JOptionPane.showMessageDialog(this, "Não foi possível ler o intervalo salvo: " + erro.getMessage(),
+                "Configuração do Orvalho", JOptionPane.ERROR_MESSAGE);
+    }
     
     JSpinner campoIntervalo = new JSpinner();
     // setar as regras do JSpinner
@@ -130,8 +151,13 @@ public class JanelaPrincipal extends JFrame {
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     panel.setBackground(new java.awt.Color(0xF4F8FC));
     panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(28, 28, 18, 28));
-    panel.setPreferredSize(new Dimension(452, 544));
-    this.add(panel);
+    panel.setPreferredSize(new Dimension(480, 600));
+    javax.swing.JScrollPane rolagem = new javax.swing.JScrollPane(panel,
+            javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    rolagem.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+    rolagem.getVerticalScrollBar().setUnitIncrement(16);
+    this.add(rolagem);
 
     panel5.setLayout(new java.awt.BorderLayout(14, 0));
     panel5.setOpaque(false);
@@ -140,7 +166,7 @@ public class JanelaPrincipal extends JFrame {
     JPanel textosCabecalho = new JPanel();
     textosCabecalho.setOpaque(false);
     textosCabecalho.setLayout(new BoxLayout(textosCabecalho, BoxLayout.Y_AXIS));
-    label1.setText("Pausa azul");
+    label1.setText("Orvalho");
     label1.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 27));
     label1.setForeground(texto);
     JLabel slogan = new JLabel("Uma pequena pausa. Um bom hábito.");
@@ -179,6 +205,7 @@ public class JanelaPrincipal extends JFrame {
     label3.setText("Lembretes pausados");
     label3.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
     label3.setForeground(azul);
+    label3.setMaximumSize(new Dimension(Integer.MAX_VALUE, label3.getPreferredSize().height + 2));
     JLabel tituloContagem = new JLabel("PRÓXIMO LEMBRETE EM");
     tituloContagem.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
     tituloContagem.setForeground(secundario);
@@ -202,8 +229,8 @@ public class JanelaPrincipal extends JFrame {
     panel.add(Box.createVerticalStrut(16));
 
     panel4.setBackground(java.awt.Color.WHITE);
-    panel4.setPreferredSize(new Dimension(396, 216));
-    panel4.setMaximumSize(new Dimension(Integer.MAX_VALUE, 216));
+    panel4.setPreferredSize(new Dimension(396, 252));
+    panel4.setMaximumSize(new Dimension(Integer.MAX_VALUE, 252));
     JLabel tituloControles = new JLabel("No seu ritmo");
     tituloControles.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 17));
     tituloControles.setForeground(texto);
@@ -277,6 +304,14 @@ public class JanelaPrincipal extends JFrame {
         panel3.add(botao);
     }
     panel4.add(panel3);
+    panel4.add(Box.createVerticalStrut(12));
+    check.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
+    check.setForeground(secundario);
+    check.setOpaque(false);
+    check.setAlignmentX(0.0f);
+    check.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    check.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    panel4.add(check);
     panel.add(panel4);
 
     // função botao INICIAR
@@ -290,9 +325,13 @@ public class JanelaPrincipal extends JFrame {
         }
         campoIntervalo.commitEdit();
         int minutos = (Integer)(campoIntervalo.getValue());
+        configuracaoIntervalo.salvar(minutos);
         lembreteService.start(minutos);
-        preferencias.putInt("intervaloMinutos", minutos);
         
+    } catch(java.io.IOException e){
+        JOptionPane.showMessageDialog(this, "Não foi possível salvar o intervalo: " + e.getMessage(),
+                "Configuração do Orvalho", JOptionPane.ERROR_MESSAGE);
+        return;
     } catch(java.text.ParseException e){
         JOptionPane.showMessageDialog(this, "Insira valores de 1 a 240!");
         // volta para o ultimo valor valido
@@ -328,24 +367,96 @@ public class JanelaPrincipal extends JFrame {
        btnIniciar.setEnabled(true);
        lembreteService.pausar();
        atualizadorContagem.stop();
-       labelContagem.setText("--:--");
+       atualizarContagem(labelContagem);
        label3.setText("Lembretes pausados");
-       ajuda.setText("Escolha o intervalo e inicie os lembretes.");
+       ajuda.setText("Inicie para retomar; outro intervalo reinicia o tempo.");
    });
    
    menuItem1.addActionListener(event -> {
-       this.setVisible(true);
+       setExtendedState(getExtendedState() & ~JFrame.ICONIFIED);
+       setVisible(true);
+       toFront();
+       requestFocus();
    });
    
    menuItem2.addActionListener(event -> {
        lembreteService.pausar();
-       bandeja.remove(iconeBandeja);
+       if (bandeja != null && iconeBandeja != null) bandeja.remove(iconeBandeja);
        System.exit(0);
    });
+   
+  // Consulta e gravação acontecem em segundo plano, sem bloquear a janela.
+  Runnable consultarInicio = () -> {
+      check.setEnabled(false);
+      check.setToolTipText("Consultando a inicialização do Windows...");
+      new javax.swing.SwingWorker<InicializacaoWindows.Estado, Void>() {
+          @Override protected InicializacaoWindows.Estado doInBackground() throws Exception {
+              return InicializacaoWindows.consultar();
+          }
+          @Override protected void done() {
+              try {
+                  InicializacaoWindows.Estado estado = get();
+                  check.setSelected(estado == InicializacaoWindows.Estado.ATIVA);
+                  preferencias.putBoolean("iniciarComWindows", check.isSelected());
+                  check.setText(estado == InicializacaoWindows.Estado.CAMINHO_INVALIDO
+                          ? "Iniciar com o Windows (atualizar caminho)" : "Iniciar com o Windows");
+                  check.setToolTipText(estado == InicializacaoWindows.Estado.CAMINHO_INVALIDO
+                          ? "Marque para registrar este executável no lugar do caminho antigo."
+                          : "Abrir na bandeja e iniciar os lembretes ao entrar no Windows.");
+              } catch (Exception erro) {
+                  check.setText("Iniciar com o Windows (verificar)");
+                  check.setToolTipText("Falha na consulta. Clique para tentar configurar novamente.");
+              } finally { check.setEnabled(true); }
+          }
+      }.execute();
+  };
+  check.addActionListener(event -> {
+      boolean ativar = check.isSelected();
+      check.setEnabled(false);
+      new javax.swing.SwingWorker<Void, Void>() {
+          @Override protected Void doInBackground() throws Exception {
+              InicializacaoWindows.configurar(ativar);
+              return null;
+          }
+          @Override protected void done() {
+              try { get(); }
+              catch (Exception erro) {
+                  Throwable causa = erro.getCause() != null ? erro.getCause() : erro;
+                  JOptionPane.showMessageDialog(JanelaPrincipal.this, causa.getMessage(),
+                          "Inicialização com o Windows", JOptionPane.ERROR_MESSAGE);
+              } finally { consultarInicio.run(); }
+          }
+      }.execute();
+  });
+  consultarInicio.run();
+  // Reutiliza o mesmo evento de Iniciar para manter controles e contagem sincronizados.
+  if (inicioAutomatico) btnIniciar.doClick(0);
+  pack();
+  setMinimumSize(new Dimension(Math.min(420, getWidth()), Math.min(400, getHeight())));
    
    
    
  }  
+    private boolean bandejaDisponivel;
+    private Runnable sincronizarContagem;
+
+    String argumentosAposAtualizacao() {
+        return "--atualizado" + (isVisible() ? "" : " --oculto")
+                + (lembreteService.ativo() ? " --iniciar-com-windows" : "")
+                + " --intervalo=" + lembreteService.intervalo()
+                + " --restante=" + lembreteService.getSegundosRestantes();
+    }
+
+    void restaurarAposAtualizacao(int minutos, long segundos, boolean ativo) {
+        if (minutos > 0) lembreteService.restaurar(minutos, segundos, ativo);
+        sincronizarContagem.run();
+    }
+
+    public boolean temBandeja() {
+        return bandejaDisponivel;
+    }
+
+    private final ConfiguracaoIntervalo configuracaoIntervalo;
     private Preferences preferencias = Preferences.userNodeForPackage(JanelaPrincipal.class);
     
     private PopupLembrete telaPopup;

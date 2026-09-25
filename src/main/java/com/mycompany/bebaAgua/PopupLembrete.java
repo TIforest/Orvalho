@@ -36,7 +36,7 @@ public class PopupLembrete extends JDialog {
         setTitle("Lembrete");
         setSize(210, 150);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         
         JButton btnOk = new JButton("Ok, obrigado!");
         JPanel panel = new JPanel();
@@ -86,6 +86,7 @@ public class PopupLembrete extends JDialog {
         setSize(380, 240);
         setLocationRelativeTo(null);
 
+        btnOk.setFocusable(false);
         btnOk.addActionListener(event -> {
         this.dispose();
     });

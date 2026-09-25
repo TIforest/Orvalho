@@ -1,0 +1,7 @@
+/target/
+/distribuicao/*
+!/distribuicao/orvalho.ico
+*.zip
+/nbproject/private/
+/.wrangler/
+*.pk8
