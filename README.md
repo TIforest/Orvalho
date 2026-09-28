@@ -86,9 +86,14 @@ A chave privada de publicacao fica em `%USERPROFILE%\.orvalho-publicacao\ed25519
 Validacao da publicacao 1.1.2: 23 testes passaram; consulta HTTPS ao Cloudflare,
 assinatura do manifesto, download publico pelo GitHub e SHA-256 foram verificados
 com o mesmo codigo de rede do aplicativo. O auxiliar empacotado rejeitou um arquivo
-adulterado sem executar o instalador. O teste completo de substituicao da instalacao
-em uso foi bloqueado pela revisao automatica da ferramenta e continua pendente;
-faca um piloto de atualizacao antes de distribuir em massa.
+adulterado sem executar o instalador.
+
+Piloto completo validado em 25/09/2026: a instalacao local ainda era 1.0.0, sem
+atualizador. Foi migrada manualmente para 1.1.2; depois o proprio aplicativo
+consultou o Cloudflare, baixou e validou a 1.1.3, encerrou, instalou e reabriu
+automaticamente. O MSI retornou 0 e a JVM reaberta informou 1.1.3. Foram preservados
+o intervalo de 30 minutos, o estado pausado, a janela oculta e o registro de inicio
+com o Windows. Logs em `%USERPROFILE%\.orvalho\atualizacoes\instalacao.log` e `msi.log`.
 
 - Sair e entrar novamente na conta com inicialização marcada e desmarcada.
 - Suspender/retomar o computador e observar o próximo alerta. Durante a suspensão

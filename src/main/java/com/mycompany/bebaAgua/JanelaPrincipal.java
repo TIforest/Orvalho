@@ -119,7 +119,7 @@ public class JanelaPrincipal extends JFrame {
         }
     });
     
-    JButton btnIniciar = new JButton("GITGUBIS");
+    JButton btnIniciar = new JButton("Iniciar");
     btnIniciar.setName("iniciarLembretes");
     JButton btnPausar = new JButton("Pausar");
     btnPausar.setEnabled(false);
