@@ -1,4 +1,4 @@
-# Outubro Rosa — tema e efeitos (1.2.22)
+# Outubro Rosa — tema e efeitos (1.2.23)
 
 ## Estrutura preservada
 
@@ -9,7 +9,7 @@ competição e sincronização continua nos serviços existentes.
 
 ## Usar
 
-Instale `distribuicao/outubro-final-1.2.22-20261007/instalador/Orvalho-1.2.22.exe`. Em Configurações > Tema:
+Instale `distribuicao/final-1.2.23/instalador/Orvalho-1.2.23.exe`. Em Configurações > Tema:
 
 - Tema original.
 - Tema original escuro.
@@ -161,3 +161,13 @@ Versão elevada para 1.2.21 a pedido explícito do usuário, para distribuir as 
 - 99 testes Java e 15 testes do Worker aprovados. Executável e instalador assinados com carimbo de tempo; MSI por usuário e sem elevação verificado. O JAR empacotado corresponde ao validado e contém as alterações desta revisão.
 - Download público conferido pelo cliente Java: assinatura Ed25519 do manifesto, SHA-256 e tamanho corretos. Site HTTP 200 aponta para a revisão; manifesto servido com `Cache-Control: no-store, max-age=0`.
 - Versão mantida em 1.2.22 por orientação do usuário. Computadores já na 1.2.22 exigem reinstalação manual para receber esta revisão; versões inferiores podem detectar a atualização. Instaladores anteriores e seus hashes foram preservados.
+
+## Publicação 1.2.23 — atualização automática — 07/10/2026
+
+- Número elevado a pedido explícito do usuário, sem alterações de interface ou funcionalidades em relação à revisão final da 1.2.22. Comparação dos JARs confirmou a mudança da versão e instruções compiladas equivalentes.
+- Produção: https://orvalho-forest.pages.dev
+- Instalador: https://github.com/BrunoTrech/Orvalho-Releases/releases/download/v1.2.23/Orvalho-1.2.23.exe
+- Imagem: `distribuicao/final-1.2.23/imagem/Orvalho`; instalador: `distribuicao/final-1.2.23/instalador/Orvalho-1.2.23.exe`.
+- SHA-256: `64bc6c3fae1497dd5dacc0eb665cae6affb39066b79847904be1436b278d07dd`; 28.984.440 bytes.
+- 99 testes Java aprovados. Executável e instalador assinados com carimbo de tempo; configuração de instalação por usuário validada.
+- O manifesto de produção anuncia 1.2.23. Computadores no canal empresa com versões inferiores, inclusive 1.2.22, podem atualizar automaticamente com o aplicativo aberto e conectado. A instalação aguarda o encerramento das interações pendentes; não foi verificada remotamente a instalação nos computadores dos funcionários.

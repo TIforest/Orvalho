@@ -303,3 +303,7 @@ Publicada em 06/10/2026. Instalações novas começam no tema original azul; a p
 Configurações > Tema reúne Tema original, Tema original escuro e Outubro Rosa. A tela educativa tem títulos numerados, sinais em tópicos e orientações destacadas, com ajuste de largura. Mantidos o azul como padrão e a preferência de tema entre reinícios.
 
 Publicada com a mensagem "Versão final com o tema Outubro Rosa implementado.". Instalador assinado, 99 testes Java e 15 testes do serviço aprovados. A numeração continua 1.2.22: quem já usa essa versão precisa reinstalar para receber a revisão. O site e o manifesto apontam para o novo arquivo, preservando os instaladores anteriores. Links e verificações em [TEMA-OUTUBRO-ROSA.md](TEMA-OUTUBRO-ROSA.md).
+
+## Atualização automática — 1.2.23 — 07/10/2026
+
+Publicada a mesma revisão final com a numeração 1.2.23, a pedido do usuário. Não altera interface nem funcionalidades. O canal empresa passa a oferecer atualização automática para versões inferiores, incluindo 1.2.22, com o aplicativo aberto e conectado. Instalador assinado e 99 testes aprovados; detalhes em [TEMA-OUTUBRO-ROSA.md](TEMA-OUTUBRO-ROSA.md).
