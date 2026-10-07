@@ -67,6 +67,7 @@ class AtualizacaoTest {
     @Test void preparaAuxiliarForaDaInstalacaoSemAlterarOriginais() throws Exception {
         Path origem = pasta.resolve("app");
         Files.createDirectories(origem.resolve("runtime/bin"));
+        Files.createDirectories(origem.resolve("app"));
         Files.writeString(origem.resolve("Orvalho.exe"), "launcher");
         Files.writeString(origem.resolve("runtime/bin/jvm.dll"), "runtime");
         Path exe = InstaladorAtualizacao.preparar(origem.resolve("Orvalho.exe"), pasta.resolve("updates"));

@@ -13,45 +13,50 @@ import java.nio.file.StandardOpenOption;
 
 /**
  *
+ *
  * @author bruno|
  */
 public class Main {
     private static FileChannel canalTrava;
     private static FileLock trava;
-    
+
     public static void main(String [] args){
+    // Deve ser definido antes da primeira inicialização da rede do Java.
+    if (System.getProperty("java.net.useSystemProxies") == null)
+        System.setProperty("java.net.useSystemProxies", "true");
     if (java.util.Arrays.asList(args).contains("--instalar-atualizacao")) {
         InstaladorAtualizacao.executar();
         return;
     }
     String pastaUsuario = System.getProperty("user.home");
-    System.out.println(pastaUsuario);
-    Path caminhoTrava = Path.of(pastaUsuario, ".pausa-azul.lock");
+    TipografiaOrvalho.iniciar();
+
+    Path caminhoTrava = Path.of(pastaUsuario, ".orvalho.lock");
     try{
     canalTrava = FileChannel.open(caminhoTrava, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
     trava = canalTrava.tryLock() ;
     if(trava == null){
-        SwingUtilities.invokeLater(() -> javax.swing.JOptionPane.showMessageDialog(null,
+        SwingUtilities.invokeLater(() -> DialogosOrvalho.showMessageDialog(null,
                 "O Orvalho já está aberto. Use Abrir no ícone perto do relógio.",
                 "Orvalho", javax.swing.JOptionPane.INFORMATION_MESSAGE));
         canalTrava.close();
         return;
     }
-    
+
     }catch(IOException e){
-        SwingUtilities.invokeLater(() -> javax.swing.JOptionPane.showMessageDialog(null,
+        SwingUtilities.invokeLater(() -> DialogosOrvalho.showMessageDialog(null,
                 "Não foi possível iniciar: " + e.getMessage(), "Orvalho", javax.swing.JOptionPane.ERROR_MESSAGE));
         return;
     }
-    
-    
-    
+
+
+
     SwingUtilities.invokeLater(() -> {
     boolean inicioAutomatico = java.util.Arrays.asList(args).contains("--iniciar-com-windows");
     JanelaPrincipal frame = new JanelaPrincipal(inicioAutomatico);
     frame.setTitle("Orvalho - " + Atualizacao.versaoAtual());
-               
-    frame.pack();
+
+    // A janela já foi dimensionada de acordo com a área útil do monitor.
     frame.setLocationRelativeTo(null);
     frame.setVisible(!inicioAutomatico || !frame.temBandeja());
     var argumentos = java.util.Arrays.asList(args);
@@ -62,12 +67,13 @@ public class Main {
             long segundos = Long.parseLong(argumentos.stream().filter(a -> a.startsWith("--restante="))
                     .findFirst().orElse("--restante=0").substring(11));
             frame.restaurarAposAtualizacao(minutos, segundos, inicioAutomatico);
+            if (argumentos.contains("--aguardando-alerta") && minutos > 0) frame.restaurarAlertaPendente();
         } catch (IllegalArgumentException ignored) { }
         frame.setVisible(!argumentos.contains("--oculto") || !frame.temBandeja());
     }
     Atualizacao.iniciar(frame);
     });
-    
-    
+
+
   }
 }

@@ -38,6 +38,7 @@ public class JanelaPrincipal extends JFrame {
     
     LembreteService lembreteService =
        new LembreteService(() -> mostrarAlerta());
+    private final GarrafaAnimada garrafa = new GarrafaAnimada(lembreteService);
     
     
     
@@ -51,6 +52,10 @@ public class JanelaPrincipal extends JFrame {
     }
 
     JanelaPrincipal(boolean inicioAutomatico, ConfiguracaoIntervalo configuracao){
+        this(inicioAutomatico, configuracao, new DadosAgua());
+    }
+
+    JanelaPrincipal(boolean inicioAutomatico, ConfiguracaoIntervalo configuracao, DadosAgua dadosAgua){
     this.configuracaoIntervalo = configuracao;
     JCheckBox check = new JCheckBox("Iniciar com o Windows");
     //Icone do APP
@@ -68,6 +73,9 @@ public class JanelaPrincipal extends JFrame {
     PopupMenu popupMenu = new PopupMenu();
     
     popupMenu.add(menuItem1);
+    MenuItem sobre = new MenuItem("Sobre e atualizações");
+    sobre.addActionListener(event -> javax.swing.SwingUtilities.invokeLater(() -> Atualizacao.mostrarSituacao(this)));
+    popupMenu.add(sobre);
     popupMenu.add(menuItem2);
     
     try{
@@ -86,11 +94,13 @@ public class JanelaPrincipal extends JFrame {
     
     
     setTitle("Orvalho");
+    getRootPane().registerKeyboardAction(event -> Atualizacao.mostrarSituacao(this),
+            javax.swing.KeyStroke.getKeyStroke("F1"), javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
     setSize(420, 300);
     setLocationRelativeTo(null); //O valor "null" posiciona a janela no centro da tela.
     setDefaultCloseOperation(bandejaDisponivel ? JFrame.HIDE_ON_CLOSE : JFrame.EXIT_ON_CLOSE);
     
-    JPanel panel = new JPanel();
+    JPanel panel = new PainelRolavel();panel.setName("conteudoPrincipal");
     JPanel panel2  = new JPanel();
     JPanel panel3  = new JPanel();
     JPanel panel4 = new JPanel();
@@ -130,7 +140,7 @@ public class JanelaPrincipal extends JFrame {
         minutosSalvos = configuracaoIntervalo.carregar(preferencias.getInt("intervaloMinutos", 30));
     } catch (java.io.IOException erro) {
         minutosSalvos = 30;
-        JOptionPane.showMessageDialog(this, "Não foi possível ler o intervalo salvo: " + erro.getMessage(),
+        DialogosOrvalho.showMessageDialog(this, "Não foi possível ler o intervalo salvo: " + erro.getMessage(),
                 "Configuração do Orvalho", JOptionPane.ERROR_MESSAGE);
     }
     
@@ -154,15 +164,16 @@ public class JanelaPrincipal extends JFrame {
     panel.setPreferredSize(new Dimension(480, 600));
     javax.swing.JScrollPane rolagem = new javax.swing.JScrollPane(panel,
             javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-            javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     rolagem.setBorder(javax.swing.BorderFactory.createEmptyBorder());
     rolagem.getVerticalScrollBar().setUnitIncrement(16);
+    TemaOrvalho.rolagem(rolagem);
     this.add(rolagem);
 
     panel5.setLayout(new java.awt.BorderLayout(14, 0));
     panel5.setOpaque(false);
     panel5.setAlignmentX(0.5f);
-    panel5.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+    panel5.setMaximumSize(new Dimension(Integer.MAX_VALUE, 66));
     JPanel textosCabecalho = new JPanel();
     textosCabecalho.setOpaque(false);
     textosCabecalho.setLayout(new BoxLayout(textosCabecalho, BoxLayout.Y_AXIS));
@@ -176,6 +187,9 @@ public class JanelaPrincipal extends JFrame {
     textosCabecalho.add(Box.createVerticalStrut(4));
     textosCabecalho.add(slogan);
     panel5.add(textosCabecalho, java.awt.BorderLayout.CENTER);
+    JPanel campanha=new JPanel();campanha.setOpaque(false);campanha.setLayout(new BoxLayout(campanha,BoxLayout.Y_AXIS));
+    JButton selo=TemaOrvalho.selo();selo.setAlignmentX(1f);campanha.add(selo);
+    panel5.add(campanha, java.awt.BorderLayout.EAST);
     panel.add(panel5);
     panel.add(Box.createVerticalStrut(20));
 
@@ -191,10 +205,11 @@ public class JanelaPrincipal extends JFrame {
                 java.awt.Graphics2D d = (java.awt.Graphics2D) g.create();
                 d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
                         java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                d.setColor(c.getBackground());
-                d.fillRoundRect(0, 0, c.getWidth() - 1, c.getHeight() - 1, 24, 24);
-                d.setColor(new java.awt.Color(0xD7E4F1));
-                d.drawRoundRect(0, 0, c.getWidth() - 1, c.getHeight() - 1, 24, 24);
+                d.setColor(new java.awt.Color(66,16,45,12));d.fillRoundRect(0,3,c.getWidth()-1,c.getHeight()-4,24,24);
+                d.setColor(TemaOrvalho.cor(c.getBackground()));
+                d.fillRoundRect(0, 0, c.getWidth() - 1, c.getHeight() - 4, 24, 24);
+                d.setColor(TemaOrvalho.cor(new java.awt.Color(painelAgua != null && painelAgua.opcoes().escuro() ? 0x39536A : 0xD7E4F1)));
+                d.drawRoundRect(0, 0, c.getWidth() - 1, c.getHeight() - 4, 24, 24);
                 d.dispose();
             }
         });
@@ -219,18 +234,24 @@ public class JanelaPrincipal extends JFrame {
     descricaoContagem.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 12));
     descricaoContagem.setForeground(secundario);
     painelContagem.remove(labelContagem);
-    painelContagem.add(label3);
-    painelContagem.add(Box.createVerticalStrut(18));
-    painelContagem.add(tituloContagem);
-    painelContagem.add(labelContagem);
-    painelContagem.add(Box.createVerticalStrut(8));
-    painelContagem.add(descricaoContagem);
+    JPanel textosContagem = new JPanel();
+    textosContagem.setOpaque(false);
+    textosContagem.setLayout(new BoxLayout(textosContagem, BoxLayout.Y_AXIS));
+    textosContagem.add(label3);
+    textosContagem.add(Box.createVerticalStrut(18));
+    textosContagem.add(tituloContagem);
+    textosContagem.add(labelContagem);
+    textosContagem.add(Box.createVerticalStrut(8));
+    textosContagem.add(descricaoContagem);
+    painelContagem.setLayout(new java.awt.BorderLayout(8, 0));
+    painelContagem.add(textosContagem, java.awt.BorderLayout.CENTER);
+    painelContagem.add(garrafa, java.awt.BorderLayout.EAST);
     panel.add(painelContagem);
     panel.add(Box.createVerticalStrut(16));
 
     panel4.setBackground(java.awt.Color.WHITE);
-    panel4.setPreferredSize(new Dimension(396, 252));
-    panel4.setMaximumSize(new Dimension(Integer.MAX_VALUE, 252));
+    panel4.setPreferredSize(new Dimension(396, 216));
+    panel4.setMaximumSize(new Dimension(Integer.MAX_VALUE, 216));
     JLabel tituloControles = new JLabel("No seu ritmo");
     tituloControles.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 17));
     tituloControles.setForeground(texto);
@@ -274,44 +295,24 @@ public class JanelaPrincipal extends JFrame {
     panel3.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
     for (JButton botao : new JButton[]{btnIniciar, btnPausar, btnTestarAlerta}) {
         botao.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
+        botao.putClientProperty("orvalho.iniciar",botao==btnIniciar);
         botao.setForeground(texto);
         botao.setBackground(botao == btnTestarAlerta
                 ? new java.awt.Color(0xE8F3FF) : java.awt.Color.WHITE);
         botao.setContentAreaFilled(false);
         botao.setOpaque(false);
-        botao.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
-            @Override
-            public void paint(java.awt.Graphics g, javax.swing.JComponent c) {
-                JButton b = (JButton) c;
-                java.awt.Graphics2D d = (java.awt.Graphics2D) g.create();
-                d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
-                        java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                d.setColor(b.isEnabled() ? b.getBackground() : new java.awt.Color(0xF2F2F2));
-                d.fillRoundRect(1, 1, c.getWidth() - 3, c.getHeight() - 3, 42, 42);
-                d.setColor(b == btnTestarAlerta ? new java.awt.Color(0x82B5F5)
-                        : new java.awt.Color(0xCCCCCC));
-                d.drawRoundRect(1, 1, c.getWidth() - 3, c.getHeight() - 3, 42, 42);
-                if (b.hasFocus()) {
-                    d.setColor(azul);
-                    d.drawRoundRect(4, 4, c.getWidth() - 9, c.getHeight() - 9, 36, 36);
-                }
-                d.dispose();
-                super.paint(g, c);
-            }
-        });
+        BotaoOrvalho.aplicar(botao,botao==btnIniciar);
         botao.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 4, 10, 4));
         botao.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
         panel3.add(botao);
     }
     panel4.add(panel3);
-    panel4.add(Box.createVerticalStrut(12));
     check.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
     check.setForeground(secundario);
     check.setOpaque(false);
     check.setAlignmentX(0.0f);
     check.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     check.setMargin(new java.awt.Insets(0, 0, 0, 0));
-    panel4.add(check);
     panel.add(panel4);
 
     // função botao INICIAR
@@ -329,18 +330,18 @@ public class JanelaPrincipal extends JFrame {
         lembreteService.start(minutos);
         
     } catch(java.io.IOException e){
-        JOptionPane.showMessageDialog(this, "Não foi possível salvar o intervalo: " + e.getMessage(),
+        DialogosOrvalho.showMessageDialog(this, "Não foi possível salvar o intervalo: " + e.getMessage(),
                 "Configuração do Orvalho", JOptionPane.ERROR_MESSAGE);
         return;
     } catch(java.text.ParseException e){
-        JOptionPane.showMessageDialog(this, "Insira valores de 1 a 240!");
+        DialogosOrvalho.showMessageDialog(this, "Insira valores de 1 a 240!");
         // volta para o ultimo valor valido
         editor.getTextField().setValue(campoIntervalo.getValue());
         
         return;
         
     } catch(IllegalArgumentException i){
-        JOptionPane.showMessageDialog(this, i.getMessage());
+        DialogosOrvalho.showMessageDialog(this, i.getMessage());
         editor.getTextField().setValue(campoIntervalo.getValue());
         
         return;
@@ -372,12 +373,24 @@ public class JanelaPrincipal extends JFrame {
        ajuda.setText("Inicie para retomar; outro intervalo reinicia o tempo.");
    });
    
-   menuItem1.addActionListener(event -> {
-       setExtendedState(getExtendedState() & ~JFrame.ICONIFIED);
-       setVisible(true);
-       toFront();
-       requestFocus();
-   });
+   Runnable abrirJanela = () -> {
+       if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
+           javax.swing.SwingUtilities.invokeLater(this::abrirDaBandeja);
+       } else abrirDaBandeja();
+   };
+   menuItem1.addActionListener(event -> abrirJanela.run());
+   if (iconeBandeja != null) {
+       iconeBandeja.addActionListener(event -> abrirJanela.run());
+       iconeBandeja.addMouseListener(new java.awt.event.MouseAdapter() {
+           @Override public void mouseClicked(java.awt.event.MouseEvent event) {
+               if (event.getButton() == java.awt.event.MouseEvent.BUTTON1 && event.getClickCount() == 2)
+                   abrirJanela.run();
+           }
+       });
+       addWindowListener(new WindowAdapter() {
+           @Override public void windowClosed(WindowEvent event) { bandeja.remove(iconeBandeja); }
+       });
+   }
    
    menuItem2.addActionListener(event -> {
        lembreteService.pausar();
@@ -422,27 +435,64 @@ public class JanelaPrincipal extends JFrame {
               try { get(); }
               catch (Exception erro) {
                   Throwable causa = erro.getCause() != null ? erro.getCause() : erro;
-                  JOptionPane.showMessageDialog(JanelaPrincipal.this, causa.getMessage(),
+                  DialogosOrvalho.showMessageDialog(JanelaPrincipal.this, causa.getMessage(),
                           "Inicialização com o Windows", JOptionPane.ERROR_MESSAGE);
               } finally { consultarInicio.run(); }
           }
       }.execute();
   });
   consultarInicio.run();
+  painelAgua = new PainelAgua(this, dadosAgua, () -> {
+      TemaOrvalho.aplicar(getContentPane(), painelAgua.opcoes().escuro());
+      AnimacoesOrvalho.reavaliar();garrafa.repaint();
+      if (telaPopup != null) {TemaOrvalho.aplicar(telaPopup.getContentPane(), painelAgua.opcoes().escuro());telaPopup.pack();}
+  }, check, consultarInicio);
+  panel.add(painelAgua);
+  panel.setPreferredSize(new Dimension(590, 880));
+  PetalasOrvalho petalas=new PetalasOrvalho(rolagem);setGlassPane(petalas);petalas.setVisible(true);
+  addWindowStateListener(e->AnimacoesOrvalho.reavaliar());
+  addWindowListener(new java.awt.event.WindowAdapter(){@Override public void windowActivated(java.awt.event.WindowEvent e){AnimacoesOrvalho.consultarSistema();AnimacoesOrvalho.reavaliar();}});
+  panel.addComponentListener(new java.awt.event.ComponentAdapter(){@Override public void componentResized(java.awt.event.ComponentEvent e){garrafa.setPreferredSize(new Dimension(panel.getWidth()<500?56:76,144));panel.revalidate();}});
+  TemaOrvalho.aplicar(getContentPane(), painelAgua.opcoes().escuro());
   // Reutiliza o mesmo evento de Iniciar para manter controles e contagem sincronizados.
   if (inicioAutomatico) btnIniciar.doClick(0);
   pack();
-  setMinimumSize(new Dimension(Math.min(420, getWidth()), Math.min(400, getHeight())));
+  // Em telas menores, o conteúdo continua acessível pela rolagem existente.
+  var tela = getGraphicsConfiguration().getBounds();
+  var margens = java.awt.Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
+  setSize(Math.min(getWidth(), tela.width-margens.left-margens.right),
+          Math.min(getHeight(), tela.height-margens.top-margens.bottom));
+  setLocationRelativeTo(null);
+  setMinimumSize(new Dimension(Math.min(460, getWidth()), Math.min(400, getHeight())));
    
    
    
  }  
+    private PainelAgua painelAgua;
+    private void abrirDaBandeja() {
+        setExtendedState(getExtendedState() & ~JFrame.ICONIFIED);
+        setVisible(true);
+        toFront();
+        requestFocus();
+    }
     private boolean bandejaDisponivel;
     private Runnable sincronizarContagem;
 
+    boolean interacaoPendente(){
+        if(lembreteService.aguardandoConfirmacao())return true;
+        return temDialogoEmUso(this);
+    }
+    static boolean temDialogoEmUso(java.awt.Window janela){
+        for(var filha:janela.getOwnedWindows()){
+            if(filha.isShowing()&&!"sobreAtualizacoes".equals(filha.getName()))return true;
+            if(temDialogoEmUso(filha))return true;
+        }
+        return false;
+    }
     String argumentosAposAtualizacao() {
         return "--atualizado" + (isVisible() ? "" : " --oculto")
                 + (lembreteService.ativo() ? " --iniciar-com-windows" : "")
+                + (lembreteService.aguardandoConfirmacao() ? " --aguardando-alerta" : "")
                 + " --intervalo=" + lembreteService.intervalo()
                 + " --restante=" + lembreteService.getSegundosRestantes();
     }
@@ -450,6 +500,12 @@ public class JanelaPrincipal extends JFrame {
     void restaurarAposAtualizacao(int minutos, long segundos, boolean ativo) {
         if (minutos > 0) lembreteService.restaurar(minutos, segundos, ativo);
         sincronizarContagem.run();
+    }
+
+    void restaurarAlertaPendente() {
+        lembreteService.restaurarAlertaPendente();
+        sincronizarContagem.run();
+        mostrarAlerta();
     }
 
     public boolean temBandeja() {
@@ -460,24 +516,38 @@ public class JanelaPrincipal extends JFrame {
     private Preferences preferencias = Preferences.userNodeForPackage(JanelaPrincipal.class);
     
     private PopupLembrete telaPopup;
+    private boolean popupReal;
     private JButton btnTestarAlerta;
 
     private void atualizarContagem(JLabel labelContagem){
+        garrafa.repaint();
         long segundos = lembreteService.getSegundosRestantes();
         labelContagem.setText(String.format("%02d:%02d",
                 segundos / 60, segundos % 60));
     }
     
     private void mostrarAlerta(){
+        boolean real = lembreteService.aguardandoConfirmacao();
         if(telaPopup != null && telaPopup.isShowing()){
-            return;
+            if (!real || popupReal) return;
+            telaPopup.dispose();
         }
-        telaPopup = new PopupLembrete();
+        popupReal = real;
+        DadosAgua.Opcoes opcoes = painelAgua.opcoes();
+        telaPopup = new PopupLembrete(() -> {
+            if (real && lembreteService.confirmarAlerta()) {
+                garrafa.esvaziar();
+                sincronizarContagem.run();
+            }
+        }, () -> {
+            if (real) lembreteService.adiarAlerta();
+            sincronizarContagem.run();
+        }, ml -> !real || painelAgua.registrar(ml), opcoes, real, painelAgua.ultimoVolume(), true);
         btnTestarAlerta.setEnabled(false);
         telaPopup.addWindowListener(new WindowAdapter(){
           @Override
           public void windowClosed(WindowEvent e){
-              btnTestarAlerta.setEnabled(true);
+              if (telaPopup == e.getWindow() || telaPopup == null || !telaPopup.isShowing()) btnTestarAlerta.setEnabled(true);
           }
           });
         

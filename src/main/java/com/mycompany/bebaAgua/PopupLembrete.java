@@ -23,24 +23,54 @@ import javax.swing.JPanel;
  */
 public class PopupLembrete extends JDialog {
     
+    private boolean concluido;
     public PopupLembrete(){
+        this(() -> {});
+    }
+
+    PopupLembrete(Runnable aoConfirmar){
+        this(aoConfirmar, () -> {}, () -> true, new DadosAgua.Opcoes(false,false,true), false);
+    }
+
+    PopupLembrete(Runnable aoConfirmar, Runnable aoAdiar, java.util.function.BooleanSupplier aoBeber,
+                  DadosAgua.Opcoes opcoes, boolean real) {
+        this(aoConfirmar,aoAdiar,ml -> aoBeber.getAsBoolean(),opcoes,real,200,false);
+    }
+    PopupLembrete(Runnable aoConfirmar,Runnable aoAdiar,java.util.function.IntPredicate aoBeber,
+                  DadosAgua.Opcoes opcoes,boolean real,int ultimoVolume,boolean quantidade) {
     java.net.URL recursoIcone = PopupLembrete.class.getResource("/imagens/agua.png"); 
     ImageIcon icone = new ImageIcon(recursoIcone);
     Image imagem = icone.getImage();
     setIconImage(imagem);
     
     
+        // Ranking, histórico e configurações são modais. O alerta deve continuar
+        // recebendo cliques mesmo quando alguma dessas telas estiver aberta.
+        setModalExclusionType(java.awt.Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
         setAlwaysOnTop(true);
-        setFocusableWindowState(false);
+        setFocusableWindowState(quantidade);
+        setAutoRequestFocus(false);
         
         setTitle("Lembrete");
         setSize(210, 150);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         
-        JButton btnOk = new JButton("Ok, obrigado!");
+        JButton btnOk = new JButton("Já bebi");
+        btnOk.setIcon(new javax.swing.Icon() {
+            public int getIconWidth(){return 16;}
+            public int getIconHeight(){return 18;}
+            public void paintIcon(java.awt.Component c,java.awt.Graphics g,int x,int y){
+                var d=(java.awt.Graphics2D)g.create();d.translate(x,y);
+                d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                var gota=new java.awt.geom.Path2D.Double();gota.moveTo(8,1);
+                gota.curveTo(6,5,2,8,2,11);gota.curveTo(2,19,14,19,14,11);
+                gota.curveTo(14,8,10,5,8,1);gota.closePath();d.setColor(TemaOrvalho.cor(c.getForeground()));d.fill(gota);d.dispose();
+            }
+        });
+        btnOk.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         JPanel panel = new JPanel();
-        JPanel panel2 = new JPanel();
+        JPanel panel2 = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
         JLabel label = new JLabel("Hora de beber água!");
         
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Layout VERTICAL
@@ -49,6 +79,46 @@ public class PopupLembrete extends JDialog {
        
         this.add(panel);
         panel.add(label);
+        JButton selo=TemaOrvalho.selo();selo.setAlignmentX(0.5f);panel.add(selo);
+        panel.add(Box.createVerticalStrut(12));
+        JLabel mensagem = new JLabel("<html><div style='width:240px;text-align:center'>"
+                + MensagensLembrete.proxima() + "</div></html>") {
+            @Override protected void paintComponent(java.awt.Graphics graphics) {
+                var g=(java.awt.Graphics2D)graphics.create();
+                g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                boolean escuro=Boolean.TRUE.equals(getClientProperty("orvalho.escuro"));
+                g.setColor(TemaOrvalho.cor(new java.awt.Color(escuro?0x203D52:0xE1EFFB)));
+                g.fillRoundRect(0,0,getWidth(),getHeight(),18,18);
+                g.setColor(TemaOrvalho.cor(new java.awt.Color(escuro?0x78AFD3:0x77A9D0)));
+                g.fillRoundRect(0,10,3,Math.max(8,getHeight()-20),3,3);
+                g.dispose();super.paintComponent(graphics);
+            }
+        };
+        mensagem.setName("mensagemHumorada");
+        mensagem.setAlignmentX(0.5f);
+        mensagem.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
+        mensagem.setBorder(javax.swing.BorderFactory.createEmptyBorder(10,14,10,14));
+        mensagem.setForeground(new java.awt.Color(0x52748E));
+        mensagem.setVisible(opcoes.humor());
+        panel.add(mensagem);
+        panel.add(Box.createVerticalStrut(12));
+        PainelTemperatura clima=new PainelTemperatura();panel.add(clima);
+        addWindowListener(new WindowAdapter(){
+            @Override public void windowOpened(java.awt.event.WindowEvent e){clima.iniciar();}
+            @Override public void windowClosed(java.awt.event.WindowEvent e){clima.parar();}
+        });
+        javax.swing.JSpinner volume = new javax.swing.JSpinner(new javax.swing.SpinnerNumberModel(ultimoVolume,10,2000,50));
+        volume.setPreferredSize(new java.awt.Dimension(85,32));
+        panel.add(Box.createVerticalStrut(20));
+        if(quantidade){
+            JPanel linha=new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER,8,0));linha.setOpaque(false);
+            linha.add(new JLabel("Bebi"));linha.add(volume);linha.add(new JLabel("ml"));
+            linha.setAlignmentX(0.5f);
+            linha.setMaximumSize(linha.getPreferredSize());
+            panel.add(linha);
+            panel.add(Box.createVerticalStrut(8));
+            volume.setToolTipText("Informe quanto bebeu nesta pausa. A última quantidade fica salva.");
+        }
         panel.add(panel2);
         panel2.add(btnOk);
         
@@ -56,7 +126,7 @@ public class PopupLembrete extends JDialog {
         panel.setBackground(new java.awt.Color(0xF0F7FF));
         panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 24, 20, 24));
         panel2.setOpaque(false);
-        panel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        panel2.setAlignmentX(0.5f);
         label.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
         label.setForeground(new java.awt.Color(0x12304A));
         btnOk.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 15));
@@ -64,31 +134,46 @@ public class PopupLembrete extends JDialog {
         btnOk.setBackground(new java.awt.Color(0x176BDA));
         btnOk.setContentAreaFilled(false);
         btnOk.setOpaque(false);
-        btnOk.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
-            @Override
-            public void paint(java.awt.Graphics g, javax.swing.JComponent c) {
-                JButton botao = (JButton) c;
-                java.awt.Graphics2D desenho = (java.awt.Graphics2D) g.create();
-                desenho.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
-                        java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                desenho.setColor(botao.getBackground());
-                desenho.fillRoundRect(1, 1, c.getWidth() - 2, c.getHeight() - 2, 20, 20);
-                if (botao.hasFocus()) {
-                    desenho.setColor(botao.getForeground());
-                    desenho.drawRoundRect(4, 4, c.getWidth() - 9, c.getHeight() - 9, 16, 16);
-                }
-                desenho.dispose();
-                super.paint(g, c);
-            }
-        });
+        BotaoOrvalho.aplicar(btnOk,true);
+        btnOk.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 15));
         btnOk.setBorder(javax.swing.BorderFactory.createEmptyBorder(13, 29, 13, 29));
         btnOk.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
-        setSize(380, 240);
+        panel2.setMaximumSize(panel2.getPreferredSize());
+        setMinimumSize(new java.awt.Dimension(380, 260));
+        pack();
         setLocationRelativeTo(null);
 
+        {
+            JPanel acoes = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+            acoes.setOpaque(false);
+            JButton adiar = new JButton("Daqui a 5 minutos");
+            BotaoOrvalho.aplicar(adiar,false);
+            adiar.addActionListener(e -> { if (concluido) return; concluido = true; dispose(); aoAdiar.run(); });
+            acoes.add(adiar);
+            acoes.setAlignmentX(0.5f);
+            acoes.setMaximumSize(acoes.getPreferredSize());
+            panel.add(Box.createVerticalStrut(10));
+            panel.add(acoes);
+            if (!real) {
+                JLabel teste = new JLabel("Teste: não registra pausas nem adia lembretes.");
+                teste.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
+                teste.setAlignmentX(0.5f); panel.add(Box.createVerticalStrut(10)); panel.add(teste);
+            }
+        }
+        TemaOrvalho.aplicar(panel, opcoes.escuro());
+        pack(); setLocationRelativeTo(null);
+        if (opcoes.som()) addWindowListener(new WindowAdapter(){
+            @Override public void windowOpened(java.awt.event.WindowEvent e){SomAlerta.tocarGota();}
+        });
         btnOk.setFocusable(false);
         btnOk.addActionListener(event -> {
+        if (concluido) return;
+        try{volume.commitEdit();}catch(java.text.ParseException erro){DialogosOrvalho.showMessageDialog(this,"Informe de 10 a 2000 ml.");return;}
+        if (!aoBeber.test(((Number)volume.getValue()).intValue())) return;
+        concluido = true;
+        btnOk.setEnabled(false);
         this.dispose();
+        aoConfirmar.run();
     });
         
         

@@ -5,3 +5,8 @@
 /nbproject/private/
 /.wrangler/
 *.pk8
+
+/competicao/.wrangler/
+/competicao/.dev.vars*
+/competicao/node_modules/
+/work-*.log

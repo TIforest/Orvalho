@@ -1,4 +1,4 @@
-param([string]$Destino, [string]$Versao = '1.1.3')
+param([string]$Destino, [string]$Versao = '1.2.22', [switch]$Assinar)
 $ErrorActionPreference = 'Stop'
 $project = $PSScriptRoot
 $jdk = $env:JAVA_HOME
@@ -25,6 +25,8 @@ if (-not $Destino) { $Destino = Join-Path $project "distribuicao\versao-$stamp" 
 if (Test-Path -LiteralPath (Join-Path $Destino 'Orvalho')) {
     throw 'O destino já contém Orvalho. Use uma pasta de saída nova.'
 }
-& $jpackage --type app-image --name Orvalho --input $entrada --main-jar BebaAgua-1.0-SNAPSHOT.jar --main-class com.mycompany.bebaAgua.Main --dest $Destino --app-version $Versao --icon (Join-Path $project 'distribuicao\orvalho.ico')
+& $jpackage --type app-image --name Orvalho --input $entrada --main-jar BebaAgua-1.0-SNAPSHOT.jar --main-class com.mycompany.bebaAgua.Main --dest $Destino --app-version $Versao --icon (Join-Path $project 'distribuicao\orvalho.ico') --add-modules java.desktop,java.prefs,java.logging,jdk.crypto.mscapi --java-options '-Djava.net.useSystemProxies=true' --java-options '--enable-native-access=ALL-UNNAMED'
 if ($LASTEXITCODE -ne 0) { throw 'Empacotamento falhou.' }
+& (Join-Path $project 'tools\ManifestoUsuario.ps1') -Arquivo (Join-Path $Destino 'Orvalho\Orvalho.exe') -Incorporar
+if ($Assinar) { & (Join-Path $project 'tools\AssinarWindows.ps1') -Arquivo (Join-Path $Destino 'Orvalho\Orvalho.exe') }
 Write-Output (Join-Path $Destino 'Orvalho\Orvalho.exe')

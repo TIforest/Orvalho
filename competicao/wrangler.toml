@@ -1,0 +1,10 @@
+name = "orvalho-competicao"
+main = "worker.mjs"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "orvalho-competicao"
+database_id = "c19ed6c7-62fe-4452-b16b-e4d4fa4e24fd"
+migrations_dir = "migrations"
