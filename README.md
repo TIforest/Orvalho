@@ -313,3 +313,7 @@ Publicada a mesma revisão final com a numeração 1.2.23, a pedido do usuário.
 O alerta permite escolher de 1 a 240 minutos antes de clicar em Adiar, com 5 minutos como valor inicial. O adiamento não registra água e vale apenas para o próximo lembrete; após confirmar Já bebi, volta ao intervalo habitual. O tempo restante é preservado ao pausar ou atualizar. Os controles seguem o tema selecionado e aceitam digitação mesmo com outras telas abertas.
 
 Validado com 101 testes Java. A versão permanece 1.2.23: computadores que já a utilizam precisam reinstalar a revisão pelo site para recebê-la. O canal empresa oferece atualização automática somente a versões inferiores. O instalador anterior permanece disponível em sua URL original.
+
+## Publicação 1.2.24 — 08/10/2026
+
+Adiamento personalizado publicado no canal empresa com nova numeração para atualização automática de versões anteriores, incluindo 1.2.23. Instalador assinado, 101 testes aprovados e download público verificado (manifesto autenticado, SHA-256 e assinatura Windows).
