@@ -12,7 +12,8 @@ class PopupLembreteTest {
    PopupLembrete p=new PopupLembrete(confirmacoes::incrementAndGet);
    try {
     p.pack();
-    assertFalse(p.getFocusableWindowState());
+    assertTrue(p.getFocusableWindowState(),"Permite digitar os minutos do adiamento");
+    assertFalse(p.isAutoRequestFocus(),"O alerta não deve roubar o foco ao abrir");
     p.dispatchEvent(new WindowEvent(p,WindowEvent.WINDOW_CLOSING));
     assertTrue(p.isDisplayable(),"X não deve descartar o alerta");
     assertEquals(0,confirmacoes.get());

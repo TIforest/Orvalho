@@ -38,6 +38,10 @@ public class PopupLembrete extends JDialog {
     }
     PopupLembrete(Runnable aoConfirmar,Runnable aoAdiar,java.util.function.IntPredicate aoBeber,
                   DadosAgua.Opcoes opcoes,boolean real,int ultimoVolume,boolean quantidade) {
+        this(aoConfirmar, minutos -> aoAdiar.run(), aoBeber, opcoes, real, ultimoVolume, quantidade);
+    }
+    PopupLembrete(Runnable aoConfirmar,java.util.function.IntConsumer aoAdiar,java.util.function.IntPredicate aoBeber,
+                  DadosAgua.Opcoes opcoes,boolean real,int ultimoVolume,boolean quantidade) {
     java.net.URL recursoIcone = PopupLembrete.class.getResource("/imagens/agua.png"); 
     ImageIcon icone = new ImageIcon(recursoIcone);
     Image imagem = icone.getImage();
@@ -48,7 +52,7 @@ public class PopupLembrete extends JDialog {
         // recebendo cliques mesmo quando alguma dessas telas estiver aberta.
         setModalExclusionType(java.awt.Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
         setAlwaysOnTop(true);
-        setFocusableWindowState(quantidade);
+        setFocusableWindowState(true);
         setAutoRequestFocus(false);
         
         setTitle("Lembrete");
@@ -144,11 +148,28 @@ public class PopupLembrete extends JDialog {
         setLocationRelativeTo(null);
 
         {
-            JPanel acoes = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+            JPanel acoes = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 8, 0));
             acoes.setOpaque(false);
-            JButton adiar = new JButton("Daqui a 5 minutos");
+            javax.swing.JSpinner espera = new javax.swing.JSpinner(new javax.swing.SpinnerNumberModel(5,1,240,1));
+            espera.setName("minutosAdiamento");
+            espera.setPreferredSize(new java.awt.Dimension(72,32));
+            espera.setToolTipText("Escolha de 1 a 240 minutos para o próximo lembrete. O intervalo habitual será mantido.");
+            espera.getAccessibleContext().setAccessibleName("Minutos até o próximo lembrete");
+            acoes.add(new JLabel("Daqui a"));
+            acoes.add(espera);
+            acoes.add(new JLabel("min"));
+            JButton adiar = new JButton("Adiar");
             BotaoOrvalho.aplicar(adiar,false);
-            adiar.addActionListener(e -> { if (concluido) return; concluido = true; dispose(); aoAdiar.run(); });
+            adiar.addActionListener(e -> {
+                if (concluido) return;
+                try { espera.commitEdit(); }
+                catch (java.text.ParseException erro) {
+                    DialogosOrvalho.showMessageDialog(this,"Informe de 1 a 240 minutos.");
+                    return;
+                }
+                int minutos = ((Number)espera.getValue()).intValue();
+                concluido = true; dispose(); aoAdiar.accept(minutos);
+            });
             acoes.add(adiar);
             acoes.setAlignmentX(0.5f);
             acoes.setMaximumSize(acoes.getPreferredSize());

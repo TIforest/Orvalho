@@ -17,7 +17,7 @@ class NovosControlesTest {
    var p=new PopupLembrete(confirmados::incrementAndGet,adiados::incrementAndGet,()->{registrados.incrementAndGet();return true;},new DadosAgua.Opcoes(true,false,false),true);
    try{
     assertFalse(achar(p,JLabel.class,"mensagemHumorada").isVisible());
-    achar(p,JButton.class,"Daqui a 5").doClick(0);
+    achar(p,JButton.class,"Adiar").doClick(0);
     assertEquals(1,adiados.get());assertEquals(0,registrados.get());assertEquals(0,confirmados.get());
    }finally{p.dispose();}
   });

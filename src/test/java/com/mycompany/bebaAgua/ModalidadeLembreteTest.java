@@ -37,7 +37,7 @@ class ModalidadeLembreteTest {
                 // O teste de modalidade não depende de consultas meteorológicas.
                 for(WindowListener listener:popup[0].getWindowListeners())popup[0].removeWindowListener(listener);
                 popup[0].setLocationRelativeTo(null);popup[0].setVisible(true);
-                JButton botao=encontrar(popup[0],adiar?"Daqui a 5 minutos":"Já bebi");assertNotNull(botao);
+                JButton botao=encontrar(popup[0],adiar?"Adiar":"Já bebi");assertNotNull(botao);
                 clique[0]=botao.getLocationOnScreen();clique[0].translate(botao.getWidth()/2,botao.getHeight()/2);
             });
             robot.waitForIdle();robot.mouseMove(clique[0].x,clique[0].y);

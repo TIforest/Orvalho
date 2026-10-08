@@ -64,9 +64,14 @@ public class LembreteService {
         return true;
     }
     boolean adiarAlerta() {
+        return adiarAlerta(5);
+    }
+    boolean adiarAlerta(int minutos) {
+        if (minutos < 1 || minutos > 240)
+            throw new IllegalArgumentException("O valor deve estar entre 1 e 240 minutos.");
         if (!aguardandoConfirmacao) return false;
         aguardandoConfirmacao = false;
-        restantePausadoNanos = 300_000_000_000L;
+        restantePausadoNanos = minutos * 60_000_000_000L;
         if (habilitado) start(intervaloMinutos);
         return true;
     }
@@ -85,7 +90,7 @@ public class LembreteService {
     }
     int intervalo() { return intervaloMinutos; }
     void restaurar(int minutos, long segundos, boolean ativo) {
-        if (minutos < 1 || minutos > 240 || segundos < 0 || segundos > Math.max(300, minutos * 60L))
+        if (minutos < 1 || minutos > 240 || segundos < 0 || segundos > 240 * 60L)
             throw new IllegalArgumentException("Estado do lembrete inválido");
         temporizador.stop();
         habilitado = false;

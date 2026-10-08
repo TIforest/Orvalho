@@ -307,3 +307,9 @@ Publicada com a mensagem "Versão final com o tema Outubro Rosa implementado.". 
 ## Atualização automática — 1.2.23 — 07/10/2026
 
 Publicada a mesma revisão final com a numeração 1.2.23, a pedido do usuário. Não altera interface nem funcionalidades. O canal empresa passa a oferecer atualização automática para versões inferiores, incluindo 1.2.22, com o aplicativo aberto e conectado. Instalador assinado e 99 testes aprovados; detalhes em [TEMA-OUTUBRO-ROSA.md](TEMA-OUTUBRO-ROSA.md).
+
+## Adiamento personalizado — revisão 1.2.23 — 08/10/2026
+
+O alerta permite escolher de 1 a 240 minutos antes de clicar em Adiar, com 5 minutos como valor inicial. O adiamento não registra água e vale apenas para o próximo lembrete; após confirmar Já bebi, volta ao intervalo habitual. O tempo restante é preservado ao pausar ou atualizar. Os controles seguem o tema selecionado e aceitam digitação mesmo com outras telas abertas.
+
+Validado com 101 testes Java. A versão permanece 1.2.23: computadores que já a utilizam precisam reinstalar a revisão pelo site para recebê-la. O canal empresa oferece atualização automática somente a versões inferiores. O instalador anterior permanece disponível em sua URL original.

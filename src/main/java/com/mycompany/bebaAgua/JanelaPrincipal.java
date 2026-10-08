@@ -539,8 +539,8 @@ public class JanelaPrincipal extends JFrame {
                 garrafa.esvaziar();
                 sincronizarContagem.run();
             }
-        }, () -> {
-            if (real) lembreteService.adiarAlerta();
+        }, minutos -> {
+            if (real) lembreteService.adiarAlerta(minutos);
             sincronizarContagem.run();
         }, ml -> !real || painelAgua.registrar(ml), opcoes, real, painelAgua.ultimoVolume(), true);
         btnTestarAlerta.setEnabled(false);
