@@ -19,7 +19,7 @@ final class PainelTemperatura extends JPanel {
         setPreferredSize(new Dimension(320,34));setMaximumSize(new Dimension(320,34));
         timer=new Timer(300000,e->atualizar());
     }
-    void iniciar(){if(LocalClima.opcao(new DadosAgua())==3){setVisible(false);return;}ativo=true;atualizar();timer.start();}
+    void iniciar(){ativo=true;atualizar();timer.start();}
     void parar(){ativo=false;timer.stop();}
     private void atualizar(){
         if(consultando)return;consultando=true;

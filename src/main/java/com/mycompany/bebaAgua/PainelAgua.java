@@ -140,7 +140,7 @@ final class PainelAgua extends JPanel {
         iniciarWindows.setName("iniciarComWindows");iniciarWindows.setFont(new Font("Segoe UI",Font.PLAIN,13));
         form.add(new JLabel("Tema"));form.add(tema);form.add(efeitos);form.add(som);form.add(humor);form.add(iniciarWindows);
         JComboBox<String> cidade=new JComboBox<>(LocalClima.OPCOES);cidade.setSelectedIndex(LocalClima.opcao(dados));
-        cidade.setToolTipText("<html>A cidade automática é aproximada pela conexão (Cloudflare).<br>VPNs podem indicar outra cidade. A cidade não aparece no ranking.<br>A previsão usa coordenadas aproximadas no MET Norway.</html>");
+        cidade.setToolTipText("<html>Escolha Telêmaco Borba ou São Paulo para a temperatura no alerta.<br>A cidade não aparece no ranking. A previsão é fornecida pelo MET Norway.</html>");
         form.add(new JLabel("Cidade para temperatura no alerta"));form.add(cidade);
         consultarInicio.run();
         JButton hidratacao=new JButton("Estimativa de hidratação por peso");BotaoOrvalho.aplicar(hidratacao,false);form.add(hidratacao);

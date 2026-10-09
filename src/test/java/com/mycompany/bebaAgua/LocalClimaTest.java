@@ -8,13 +8,23 @@ class LocalClimaTest {
  @TempDir Path pasta;
  @Test void preferenciasLocaisECoordenadas()throws Exception{
   var dados=new DadosAgua(pasta);assertEquals(0,LocalClima.opcao(dados));
-  for(int i=0;i<4;i++){LocalClima.salvar(dados,i);assertEquals(i,LocalClima.opcao(dados));}
-  var sp=LocalClima.interpretar("city=S%C3%A3o+Paulo&lat=-23.55&lon=-46.63");
+  assertEquals(2,LocalClima.OPCOES.length);
+  for(int i=0;i<2;i++){LocalClima.salvar(dados,i);assertEquals(i,LocalClima.opcao(dados));}
+  var sp=LocalClima.consultar(dados);
   assertEquals("São Paulo",sp.cidade());assertTrue(sp.url().endsWith("lat=-23.55&lon=-46.63"));
   assertTrue(new TemperaturaService.Clima(20,java.time.Instant.now(),sp.cidade()).texto().startsWith("São Paulo"));
  }
- @Test void rejeitaLocalizacaoAusenteOuInvalida(){
-  for(String s:new String[]{"","city=X&lat=NaN&lon=0","city=X&lat=91&lon=0","city=X&lat=0&lon=181","city=%0A&lat=0&lon=0"})assertThrows(IOException.class,()->LocalClima.interpretar(s));
+ @Test void migraPreferenciasAnterioresSemTrocarCidades() throws Exception {
+  var dados=new DadosAgua(pasta);
+  assertEquals(LocalClima.TB,LocalClima.consultar(dados));
+  for(String valor:new String[]{"0","1","3","-1","99","inválido",""}){
+   java.nio.file.Files.writeString(pasta.resolve("cidade-clima.txt"),valor);
+   assertEquals(LocalClima.TB,LocalClima.consultar(dados));
+  }
+  java.nio.file.Files.writeString(pasta.resolve("cidade-clima.txt"),"2");
+  assertEquals(LocalClima.SP,LocalClima.consultar(dados));
+  LocalClima.salvar(dados,0);assertEquals(LocalClima.TB,LocalClima.consultar(dados));
+  assertThrows(IllegalArgumentException.class,()->LocalClima.salvar(dados,2));
  }
  @Test void trocaDeCidadeInvalidaCacheESemLocalNaoUsaTelemaco(){
   var lugar=new java.util.concurrent.atomic.AtomicReference<>(LocalClima.TB);

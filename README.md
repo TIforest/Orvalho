@@ -317,3 +317,7 @@ Validado com 101 testes Java. A versão permanece 1.2.23: computadores que já a
 ## Publicação 1.2.24 — 08/10/2026
 
 Adiamento personalizado publicado no canal empresa com nova numeração para atualização automática de versões anteriores, incluindo 1.2.23. Instalador assinado, 101 testes aprovados e download público verificado (manifesto autenticado, SHA-256 e assinatura Windows).
+
+## Localização manual — 1.2.25 — 09/10/2026
+
+A temperatura no alerta passa a ter somente duas cidades: Telêmaco Borba e São Paulo. Removida a consulta automática por IP do aplicativo. Preferências antigas de ambas as cidades são preservadas; modo automático, opção antiga de ocultar, arquivo ausente ou inválido usam Telêmaco Borba como padrão. A escolha pode ser alterada nas configurações. Validado com 101 testes Java, incluindo migração das preferências e troca de cidade.
