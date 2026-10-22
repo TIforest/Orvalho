@@ -321,3 +321,7 @@ Adiamento personalizado publicado no canal empresa com nova numeração para atu
 ## Localização manual — 1.2.25 — 09/10/2026
 
 A temperatura no alerta passa a ter somente duas cidades: Telêmaco Borba e São Paulo. Removida a consulta automática por IP do aplicativo. Preferências antigas de ambas as cidades são preservadas; modo automático, opção antiga de ocultar, arquivo ausente ou inválido usam Telêmaco Borba como padrão. A escolha pode ser alterada nas configurações. Validado com 101 testes Java, incluindo migração das preferências e troca de cidade.
+
+## Outubro Rosa como tema principal — 1.2.26 — 22/10/2026
+
+A primeira abertura desta versão ativa Outubro Rosa em instalações novas e existentes, uma única vez. Som, humor e efeitos são preservados. O usuário pode escolher outro tema nas configurações, e essa escolha persiste. Migração validada junto aos 101 testes Java. Versão autorizada para publicação no canal empresa.

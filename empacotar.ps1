@@ -1,4 +1,4 @@
-param([string]$Destino, [string]$Versao = '1.2.25', [switch]$Assinar)
+param([string]$Destino, [string]$Versao = '1.2.26', [switch]$Assinar)
 $ErrorActionPreference = 'Stop'
 $project = $PSScriptRoot
 $jdk = $env:JAVA_HOME

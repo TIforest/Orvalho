@@ -31,7 +31,7 @@ class DadosAguaTest {
   var dia=LocalDate.of(2026,9,30);var f=pasta.resolve("consumo-"+dia+".tsv");
   String antigo="2026-09-30T10:00\t200\n";Files.writeString(f,antigo);
   Files.writeString(pasta.resolve("preferencias.properties"),"escuro=true\nsom=false\nhumor=true\nvolume=350\n");
-  var d=new DadosAgua(pasta);assertFalse(d.carregar().outubroRosa());assertTrue(d.carregar().escuro());
+  var d=new DadosAgua(pasta);assertTrue(d.carregar().outubroRosa());assertFalse(d.carregar().escuro());
   var registro=d.historico(dia).getFirst();assertTrue(d.desfazer(dia,registro.id()));
   assertTrue(new DadosAgua(pasta).historico(dia).isEmpty());assertEquals(antigo,Files.readString(f));
  }

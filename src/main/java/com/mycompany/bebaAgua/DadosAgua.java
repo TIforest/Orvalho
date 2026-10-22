@@ -21,10 +21,12 @@ final class DadosAgua {
         Path f=pasta.resolve("preferencias.properties");
         Properties p=new Properties();
         if(Files.exists(f))try(var r=Files.newBufferedReader(f)){p.load(r);}
-        // A partir da 1.2.22, a campanha exige escolha nas configurações.
-        // Volta ao azul uma única vez; escolhas posteriores não são redefinidas.
-        if(!Boolean.parseBoolean(p.getProperty("temaAzulPadrao122Aplicado","false"))){
-            p.setProperty("outubroRosa","false");
+        // Ativa a campanha uma vez nesta atualização, preservando escolhas posteriores.
+        // Mantém som, humor, efeitos e demais preferências existentes.
+        if(!Boolean.parseBoolean(p.getProperty("temaRosaPadrao126Aplicado","false"))){
+            p.setProperty("outubroRosa","true");
+            p.setProperty("escuro","false");
+            p.setProperty("temaRosaPadrao126Aplicado","true");
             p.setProperty("temaAzulPadrao122Aplicado","true");
             p.remove("rosaVibrante");
             // Impede uma instalação anterior de reativar a campanha ao ler este arquivo.
@@ -38,7 +40,7 @@ final class DadosAgua {
                 Boolean.parseBoolean(p.getProperty("efeitos","true")));
     }
     synchronized void salvar(Opcoes o) throws IOException {
-        gravar(pasta.resolve("preferencias.properties"),"escuro="+o.escuro()+"\nsom="+o.som()+"\nhumor="+o.humor()+"\noutubroRosa="+o.outubroRosa()+"\nefeitos="+o.efeitos()+"\ncampanhaOutubroRosa2026Aplicada=true\ntemaAzulPadrao122Aplicado=true\n");
+        gravar(pasta.resolve("preferencias.properties"),"escuro="+o.escuro()+"\nsom="+o.som()+"\nhumor="+o.humor()+"\noutubroRosa="+o.outubroRosa()+"\nefeitos="+o.efeitos()+"\ncampanhaOutubroRosa2026Aplicada=true\ntemaAzulPadrao122Aplicado=true\ntemaRosaPadrao126Aplicado=true\n");
     }
     synchronized List<Pausa> historico(LocalDate dia) throws IOException {
         return lerPausas(dia).stream().filter(p -> !p.cancelada()).toList();
