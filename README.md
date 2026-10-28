@@ -325,3 +325,7 @@ A temperatura no alerta passa a ter somente duas cidades: Telêmaco Borba e São
 ## Outubro Rosa como tema principal — 1.2.26 — 22/10/2026
 
 A primeira abertura desta versão ativa Outubro Rosa em instalações novas e existentes, uma única vez. Som, humor e efeitos são preservados. O usuário pode escolher outro tema nas configurações, e essa escolha persiste. Migração validada junto aos 101 testes Java. Versão autorizada para publicação no canal empresa.
+
+## Correção do endereço do ranking — 1.2.27 — 28/10/2026
+
+O subdomínio workers.dev da conta mudou de bruno-rech para forestpaper. Aplicativos anteriores mantinham o endereço antigo e deixaram de alcançar a API por falha de DNS. Esta versão aponta para https://orvalho-competicao.forestpaper.workers.dev e preserva os tokens locais, cadastros e históricos. O canal de atualização em pages.dev permanece acessível. Não houve alteração ou migração no banco de dados.

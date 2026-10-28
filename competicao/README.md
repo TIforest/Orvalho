@@ -13,7 +13,7 @@ O cadastro cria uma credencial individual neste computador. Os registros de cada
 ## Serviço ativo
 
 - Conta: ti@forest.ind.br (Bruno Rech), ID `9ebe6f7a9beb0de8a8cb3a1d63468d12`.
-- Worker: https://orvalho-competicao.bruno-rech.workers.dev
+- Worker: https://orvalho-competicao.forestpaper.workers.dev
 - D1: `orvalho-competicao`, ID `c19ed6c7-62fe-4452-b16b-e4d4fa4e24fd`.
 - Configuração do aplicativo: `src/main/resources/competicao.properties`.
 - Senha: apenas seu SHA-256 no secret `COMPETITION_PASSWORD_HASH` do Worker. Nunca colocar senha ou hash no repositório, no site ou no aplicativo. Nenhum token administrativo é distribuído.
