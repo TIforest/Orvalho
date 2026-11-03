@@ -8,19 +8,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class TemaOutubroRosaTest {
  @TempDir Path pasta;
  @AfterEach void normal(){TemaOrvalho.outubroRosa(false);}
- @Test void atualizacaoAtivaRosaUmaVezEPreservaEscolhaPosterior() throws Exception {
-  Files.writeString(pasta.resolve("preferencias.properties"),"escuro=false\nsom=true\nhumor=false\noutubroRosa=false\ntemaAzulPadrao122Aplicado=true\nefeitos=false\ncampanhaOutubroRosa2026Aplicada=true\n");
-  DadosAgua d=new DadosAgua(pasta);assertEquals(new DadosAgua.Opcoes(false,true,false,true,false),d.carregar());
+ @Test void atualizacaoRestauraAzulUmaVezEPreservaEscolhaPosterior() throws Exception {
+  Files.writeString(pasta.resolve("preferencias.properties"),"escuro=false\nsom=true\nhumor=false\noutubroRosa=true\ntemaRosaPadrao126Aplicado=true\ntemaAzulPadrao122Aplicado=true\nefeitos=false\ncampanhaOutubroRosa2026Aplicada=true\n");
+  DadosAgua d=new DadosAgua(pasta);assertEquals(new DadosAgua.Opcoes(false,true,false,false,false),d.carregar());
   assertEquals(d.carregar(),new DadosAgua(pasta).carregar());
   d.salvar(new DadosAgua.Opcoes(false,true,false,true,false));
   assertTrue(new DadosAgua(pasta).carregar().outubroRosa());assertFalse(d.carregar().escuro());
   assertFalse(new DadosAgua(pasta).carregar().efeitos());
   d.salvar(new DadosAgua.Opcoes(true,true,false));assertFalse(d.carregar().outubroRosa());assertTrue(d.carregar().escuro());
  }
- @Test void instalacaoNovaComecaRosaELegadoMantemDemaisPreferencias() throws Exception {
-  DadosAgua d=new DadosAgua(pasta);assertEquals(new DadosAgua.Opcoes(false,false,true,true),d.carregar());
+ @Test void instalacaoNovaComecaAzulELegadoMantemDemaisPreferencias() throws Exception {
+  DadosAgua d=new DadosAgua(pasta);assertEquals(new DadosAgua.Opcoes(false,false,true),d.carregar());
   Files.writeString(pasta.resolve("preferencias.properties"),"escuro=true\nsom=true\nhumor=false\noutubroRosa=false\nvolume=350\n");
-  assertEquals(new DadosAgua.Opcoes(false,true,false,true),d.carregar());
+  assertEquals(new DadosAgua.Opcoes(false,true,false),d.carregar());
   assertTrue(Files.readString(pasta.resolve("preferencias.properties")).contains("volume=350"));
   d.salvar(new DadosAgua.Opcoes(false,true,false));
   assertFalse(new DadosAgua(pasta).carregar().outubroRosa());

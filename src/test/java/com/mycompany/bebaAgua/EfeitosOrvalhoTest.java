@@ -13,7 +13,7 @@ class EfeitosOrvalhoTest {
  @Test void removeVarianteVibranteEPreservaPreferenciasEntreReinicios()throws Exception{
   DadosAgua d=new DadosAgua(pasta);
   Files.writeString(pasta.resolve("preferencias.properties"),"escuro=false\nsom=true\nhumor=false\noutubroRosa=true\nrosaVibrante=true\nefeitos=false\ncampanhaOutubroRosa2026Aplicada=true\n");
-  var o=new DadosAgua.Opcoes(false,true,false,true,false);assertEquals(o,d.carregar());d.salvar(o);
+  var o=new DadosAgua.Opcoes(false,true,false,false,false);assertEquals(o,d.carregar());d.salvar(o);
   assertEquals(o,new DadosAgua(pasta).carregar());
   assertFalse(Files.readString(pasta.resolve("preferencias.properties")).contains("rosaVibrante"));
   d.salvar(new DadosAgua.Opcoes(true,true,false,false,true));assertTrue(d.carregar().escuro());assertFalse(d.carregar().outubroRosa());

@@ -1,5 +1,5 @@
 param(
-    [string]$Versao = '1.2.27',
+    [string]$Versao = '1.2.28',
     [string]$Imagem = (Join-Path $PSScriptRoot "distribuicao\versao-$Versao\Orvalho"),
     [string]$Destino = (Join-Path $PSScriptRoot 'distribuicao\instalador'),
     [string]$Wix = (Join-Path $env:LOCALAPPDATA 'OrvalhoBuild\wix-3.14.1'),
