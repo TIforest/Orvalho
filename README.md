@@ -333,3 +333,7 @@ O subdomínio workers.dev da conta mudou de bruno-rech para forestpaper. Aplicat
 ## Retorno ao azul original — 1.2.28 — 03/11/2026
 
 A primeira abertura da versão 1.2.28 restaura o tema original azul em instalações novas e existentes. A migração ocorre uma vez; escolhas posteriores nas configurações persistem, inclusive Outubro Rosa e o tema escuro. As demais preferências são preservadas. O endereço do ranking permanece no subdomínio forestpaper.
+
+## Seletor de temas — revisão 1.2.28 — 04/11/2026
+
+Removida a opção Outubro Rosa das configurações. O seletor oferece Tema original e Tema original escuro. Publicação da revisão com instalador assinado em URL própria, preservando o arquivo anterior. Quem já utiliza 1.2.28 precisa reinstalar pelo site; versões inferiores recebem a revisão pela atualização automática.

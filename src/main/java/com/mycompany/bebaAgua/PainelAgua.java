@@ -129,8 +129,8 @@ final class PainelAgua extends JPanel {
     private void configurar(){
         JPanel form=new JPanel(new GridLayout(0,1,6,10));
         form.setOpaque(false);
-        JComboBox<String> tema=new JComboBox<>(new String[]{"Tema original","Tema original escuro","Outubro Rosa"});
-        tema.setName("temaAplicativo");tema.setSelectedIndex(opcoes.outubroRosa()?2:opcoes.escuro()?1:0);
+        JComboBox<String> tema=new JComboBox<>(new String[]{"Tema original","Tema original escuro"});
+        tema.setName("temaAplicativo");tema.setSelectedIndex(opcoes.escuro()?1:0);
         JCheckBox efeitos=new JCheckBox("Efeitos e animações",opcoes.efeitos());efeitos.setName("efeitosConfiguracoes");efeitos.setOpaque(false);efeitos.setToolTipText("Respeita também a preferência de animações do Windows.");
         JCheckBox som=new JCheckBox("Som do alerta (gota de água)",opcoes.som());
         JCheckBox humor=new JCheckBox("Mensagens humoradas",opcoes.humor());
@@ -151,7 +151,7 @@ final class PainelAgua extends JPanel {
         salvar.addActionListener(e->{
             try {
 
-                var novas=new DadosAgua.Opcoes(tema.getSelectedIndex()==1,som.isSelected(),humor.isSelected(),tema.getSelectedIndex()==2,efeitos.isSelected());
+                var novas=new DadosAgua.Opcoes(tema.getSelectedIndex()==1,som.isSelected(),humor.isSelected(),false,efeitos.isSelected());
                 LocalClima.salvar(dados,cidade.getSelectedIndex());dados.salvar(novas);opcoes=novas;TemaOrvalho.configurar(novas);atualizar();mudouTema.run();dialogo.dispose();
             }catch(Exception ex){DialogosOrvalho.showMessageDialog(janela,"Não foi possível salvar: "+ex.getMessage());}
         });

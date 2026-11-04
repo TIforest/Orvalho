@@ -45,21 +45,21 @@ class TemaOutubroRosaTest {
    try{
     PainelAgua p=new PainelAgua(f,dados,()->TemaOrvalho.aplicar(f.getContentPane(),false),new JCheckBox(),()->{});
     f.setContentPane(p);f.pack();
-    for(int indice:new int[]{1,2,0}){
+    for(int indice:new int[]{1,0}){
      java.util.concurrent.atomic.AtomicReference<Throwable> falha=new java.util.concurrent.atomic.AtomicReference<>();
      Timer timer=new Timer(100,e->{
       for(Window w:f.getOwnedWindows())if(w instanceof JDialog d&&d.isShowing()){
        try{assertEquals("Configurações",d.getTitle());assertSame(p,f.getContentPane());
-        JComboBox<?> tema=(JComboBox<?>)achar(d,"temaAplicativo");assertNotNull(tema);assertEquals(3,tema.getItemCount());assertEquals("Tema original escuro",tema.getItemAt(1));assertEquals("Outubro Rosa",tema.getItemAt(2));
-        assertEquals(p.opcoes().outubroRosa()?2:p.opcoes().escuro()?1:0,tema.getSelectedIndex());tema.setSelectedIndex(indice);
-        JCheckBox efeitos=(JCheckBox)achar(d,"efeitosConfiguracoes");assertNotNull(efeitos);efeitos.setSelected(indice==2);
+        JComboBox<?> tema=(JComboBox<?>)achar(d,"temaAplicativo");assertNotNull(tema);assertEquals(2,tema.getItemCount());assertEquals("Tema original escuro",tema.getItemAt(1));assertEquals("Tema original",tema.getItemAt(0));
+        assertEquals(p.opcoes().escuro()?1:0,tema.getSelectedIndex());tema.setSelectedIndex(indice);
+        JCheckBox efeitos=(JCheckBox)achar(d,"efeitosConfiguracoes");assertNotNull(efeitos);efeitos.setSelected(indice==0);
         ((JButton)achar(d,"Salvar")).doClick(0);
        }catch(Throwable ex){falha.set(ex);d.dispose();}
       }
      });timer.setRepeats(false);timer.start();((JButton)achar(f,"abrirConfiguracoes")).doClick(0);
      if(falha.get()!=null)throw new AssertionError(falha.get());
-     assertEquals(indice==2,dados.carregar().outubroRosa());assertEquals(indice==1,dados.carregar().escuro());
-     assertEquals(indice==2,new DadosAgua(pasta).carregar().efeitos());
+     assertFalse(dados.carregar().outubroRosa());assertEquals(indice==1,dados.carregar().escuro());
+     assertEquals(indice==0,new DadosAgua(pasta).carregar().efeitos());
     }
    }catch(java.io.IOException e){throw new RuntimeException(e);}finally{f.dispose();}
   });
