@@ -9,6 +9,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 final class SomAlerta {
     private static final AtomicBoolean tocando = new AtomicBoolean();
     private SomAlerta() {}
+    static void tocarAlongamento() {
+        Thread audio=new Thread(()->{
+            // Duas notas suaves distinguem a pausa da gota do lembrete de água.
+            int taxa=22050;byte[] pcm=new byte[taxa*2];
+            for(int i=0;i<taxa;i++){
+                double t=i/(double)taxa,local=t<.45?t:t-.45;
+                double amplitude=Math.min(1,local/.02)*Math.exp(-local*7)*.22;
+                short valor=(short)(Math.sin(2*Math.PI*(t<.45?659.25:880)*local)*amplitude*32767);
+                pcm[i*2]=(byte)valor;pcm[i*2+1]=(byte)(valor>>8);
+            }
+            try(Clip clip=AudioSystem.getClip()){
+                clip.open(new AudioFormat(taxa,16,1,true,false),pcm,0,pcm.length);clip.start();
+                Thread.sleep(1100);
+            }catch(InterruptedException e){Thread.currentThread().interrupt();}
+            catch(Exception e){System.getLogger(SomAlerta.class.getName()).log(System.Logger.Level.DEBUG,"Áudio de alongamento indisponível",e);}
+        },"orvalho-som-alongamento");audio.setDaemon(true);audio.start();
+    }
     static AudioInputStream abrirGota() throws IOException, UnsupportedAudioFileException {
         var recurso = SomAlerta.class.getResource("/sons/gota.wav");
         if (recurso == null) throw new IOException("Som de gota ausente.");

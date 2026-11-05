@@ -464,11 +464,47 @@ public class JanelaPrincipal extends JFrame {
           Math.min(getHeight(), tela.height-margens.top-margens.bottom));
   setLocationRelativeTo(null);
   setMinimumSize(new Dimension(Math.min(460, getWidth()), Math.min(400, getHeight())));
+  try {
+      alongamentoService=new AlongamentoService(dadosAgua,AlongamentoService.Agenda.carregar(),
+              java.time.Clock.systemUTC(),()->mostrarAlongamento(false));
+      alongamentoService.iniciar();
+  }catch(java.io.IOException e){
+      DialogosOrvalho.showMessageDialog(this,"Não foi possível iniciar os avisos de alongamento: "+e.getMessage());
+  }
+  addWindowListener(new WindowAdapter(){@Override public void windowClosed(WindowEvent e){
+      if(alongamentoService!=null)alongamentoService.parar();
+      if(telaAlongamento!=null)telaAlongamento.dispose();
+      if(telaPopup!=null)telaPopup.dispose();
+  }});
    
    
    
  }  
     private PainelAgua painelAgua;
+    private AlongamentoService alongamentoService;
+    private PopupAlongamento telaAlongamento;
+    private boolean encerrando;
+    void mostrarAlongamento(boolean teste){
+        if(telaAlongamento!=null&&telaAlongamento.isShowing()){telaAlongamento.toFront();return;}
+        boolean aguaVisivel=telaPopup!=null&&telaPopup.isShowing();
+        if(aguaVisivel)telaPopup.setVisible(false);
+        var opcoes=painelAgua.opcoes();
+        telaAlongamento=new PopupAlongamento(opcoes.escuro(),opcoes.som(),teste);
+        telaAlongamento.addWindowListener(new WindowAdapter(){@Override public void windowClosed(WindowEvent e){
+            if(telaAlongamento!=e.getWindow())return;
+            telaAlongamento=null;
+            if(encerrando||!isDisplayable())return;
+            if(lembreteService.aguardandoConfirmacao()){
+                if(telaPopup!=null&&popupReal&&telaPopup.isDisplayable())telaPopup.setVisible(true);
+                else {
+                    if(telaPopup!=null)telaPopup.dispose();
+                    mostrarAlerta();
+                }
+            }else if(aguaVisivel&&telaPopup!=null&&telaPopup.isDisplayable())telaPopup.setVisible(true);
+        }});
+        telaAlongamento.setVisible(true);
+    }
+    @Override public void dispose(){encerrando=true;super.dispose();}
     private void abrirDaBandeja() {
         setExtendedState(getExtendedState() & ~JFrame.ICONIFIED);
         setVisible(true);
@@ -479,6 +515,7 @@ public class JanelaPrincipal extends JFrame {
     private Runnable sincronizarContagem;
 
     boolean interacaoPendente(){
+        if(telaAlongamento!=null&&telaAlongamento.isShowing())return true;
         if(lembreteService.aguardandoConfirmacao())return true;
         return temDialogoEmUso(this);
     }
@@ -527,6 +564,7 @@ public class JanelaPrincipal extends JFrame {
     }
     
     private void mostrarAlerta(){
+        if(telaAlongamento!=null&&telaAlongamento.isShowing())return;
         boolean real = lembreteService.aguardandoConfirmacao();
         if(telaPopup != null && telaPopup.isShowing()){
             if (!real || popupReal) return;

@@ -142,11 +142,27 @@ final class PainelAgua extends JPanel {
         JComboBox<String> cidade=new JComboBox<>(LocalClima.OPCOES);cidade.setSelectedIndex(LocalClima.opcao(dados));
         cidade.setToolTipText("<html>Escolha Telêmaco Borba ou São Paulo para a temperatura no alerta.<br>A cidade não aparece no ranking. A previsão é fornecida pelo MET Norway.</html>");
         form.add(new JLabel("Cidade para temperatura no alerta"));form.add(cidade);
+        if(janela instanceof JanelaPrincipal principal){
+            JButton alongamento=new JButton("Testar aviso de alongamento");
+            alongamento.setName("testarAlongamento");BotaoOrvalho.aplicar(alongamento,false);
+            alongamento.setToolTipText("Prévia do aviso. Não altera os horários nem registra presença.");
+            alongamento.addActionListener(e->principal.mostrarAlongamento(true));form.add(alongamento);
+            try {
+                var agenda=AlongamentoService.Agenda.carregar();
+                var formato=java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+                JLabel horarios=new JLabel(agenda.ativo()?(agenda.diasUteis()?"Segunda a sexta":"Todos os dias")+" · "+agenda.horarios().get(0).format(formato)+" e "+agenda.horarios().get(1).format(formato)+" · Brasília":"Avisos de alongamento desativados");
+                horarios.setFont(new Font("Segoe UI",Font.PLAIN,11));form.add(horarios);
+            }catch(IOException e){form.add(new JLabel("Agenda de alongamento indisponível"));}
+        }
         consultarInicio.run();
         JButton hidratacao=new JButton("Estimativa de hidratação por peso");BotaoOrvalho.aplicar(hidratacao,false);form.add(hidratacao);
         hidratacao.addActionListener(e->{PainelPeso.abrir(SwingUtilities.getWindowAncestor(form),dados,opcoes.escuro());atualizar();});
         JButton salvar=new JButton("Salvar");BotaoOrvalho.aplicar(salvar,true);form.add(salvar);
-        JPanel raiz=new JPanel(new BorderLayout());raiz.setBackground(new Color(0xF4F8FC));raiz.setBorder(BorderFactory.createEmptyBorder(24,24,24,24));raiz.add(form,BorderLayout.NORTH);TemaOrvalho.aplicar(raiz,opcoes.escuro());
+        JPanel raiz=new JPanel(new BorderLayout());raiz.setBackground(new Color(0xF4F8FC));raiz.setBorder(BorderFactory.createEmptyBorder(24,24,24,24));
+        JPanel conteudo=new JPanel(new BorderLayout());conteudo.setOpaque(false);conteudo.add(form,BorderLayout.NORTH);
+        JScrollPane rolagem=new JScrollPane(conteudo,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        rolagem.setBorder(BorderFactory.createEmptyBorder());rolagem.getVerticalScrollBar().setUnitIncrement(16);TemaOrvalho.rolagem(rolagem);
+        raiz.add(rolagem,BorderLayout.CENTER);TemaOrvalho.aplicar(raiz,opcoes.escuro());
         JDialog dialogo=new JDialog(janela,"Configurações",true);dialogo.setContentPane(raiz);dialogo.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         salvar.addActionListener(e->{
             try {
@@ -155,7 +171,11 @@ final class PainelAgua extends JPanel {
                 LocalClima.salvar(dados,cidade.getSelectedIndex());dados.salvar(novas);opcoes=novas;TemaOrvalho.configurar(novas);atualizar();mudouTema.run();dialogo.dispose();
             }catch(Exception ex){DialogosOrvalho.showMessageDialog(janela,"Não foi possível salvar: "+ex.getMessage());}
         });
-        dialogo.pack();dialogo.setLocationRelativeTo(janela);dialogo.setVisible(true);
+        dialogo.pack();
+        var limites=janela.getGraphicsConfiguration().getBounds();
+        var margens=Toolkit.getDefaultToolkit().getScreenInsets(janela.getGraphicsConfiguration());
+        dialogo.setSize(Math.min(dialogo.getWidth()+20,limites.width-margens.left-margens.right),Math.min(dialogo.getHeight(),limites.height-margens.top-margens.bottom-40));
+        dialogo.setLocationRelativeTo(janela);dialogo.setVisible(true);
     }
     private void erro(Exception e){DialogosOrvalho.showMessageDialog(janela,"Não foi possível concluir: "+e.getMessage(),"Orvalho",JOptionPane.ERROR_MESSAGE);}
 }

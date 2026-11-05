@@ -337,3 +337,17 @@ A primeira abertura da versão 1.2.28 restaura o tema original azul em instalaç
 ## Seletor de temas — revisão 1.2.28 — 04/11/2026
 
 Removida a opção Outubro Rosa das configurações. O seletor oferece Tema original e Tema original escuro. Publicação da revisão com instalador assinado em URL própria, preservando o arquivo anterior. Quem já utiliza 1.2.28 precisa reinstalar pelo site; versões inferiores recebem a revisão pela atualização automática.
+
+## Alongamento — implementação local — 05/11/2026
+
+Aviso às 10:00 e às 15:00, de segunda a sexta, no horário de Brasília. Agenda em src/main/resources/alongamento.properties. Funciona com o Orvalho aberto, inclusive na bandeja, sem depender de iniciar os lembretes de água. O aviso tem visual âmbar, ícone próprio, sinal sonoro distinto (respeita a opção de som) e botões Iniciar e OK. Iniciar começa uma contagem de 2 minutos; ao terminar, exibe Concluído e aguarda OK para fechar. O tempo não reinicia ao clicar novamente, e fechar cancela a contagem. Não registra presença ou água.
+
+A confirmação de exibição fica em .orvalho/alongamento-exibidos.properties para impedir repetição no mesmo horário após reiniciar ou atualizar. Não recupera horários perdidos; abertura dentro do minuto programado é aceita. Retomada após pausa de execução superior a 90 segundos não dispara um aviso atrasado. Ao coincidir com água, a janela de água aguarda e reaparece após OK, preservando a quantidade digitada. Atualizações aguardam o fechamento do aviso. Configurações incluem Testar aviso de alongamento sem consumir o disparo real.
+
+Versão mantida em 1.2.28. Não publicado no Cloudflare.
+
+## Publicação 1.2.29 — 05/11/2026
+
+Versão autorizada para disponibilizar os alertas de alongamento no canal empresa. Segunda a sexta às 10h e 15h de Brasília; Iniciar dispara contagem de dois minutos e OK fecha o aviso. O código desta implementação acompanha a publicação no GitHub. Não registra presença nem altera registros de água.
+
+Publicação concluída em https://orvalho-forest.pages.dev com instalador assinado e 108 testes aprovados. Manifesto autenticado, download completo e SHA-256 verificados. Atualização automática disponível para versões anteriores com o app aberto e conectado.
