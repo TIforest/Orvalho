@@ -361,3 +361,7 @@ Publicada no canal empresa, com 110 testes aprovados, instalador assinado e down
 ## Correção dos toques de alongamento — 1.2.31 — 09/11/2026
 
 O sinal de fim do exercício também dispara se a interface pular o segundo exato e ainda estiver dentro da transição de dois segundos. Isso evita perder o toque em atrasos breves e não repete sinais antigos. A suíte da versão passou com 110 testes.
+
+## Reprodução dos toques no Windows — 1.2.32 — 09/11/2026
+
+O sinal de fim dos exercícios usa o reprodutor nativo do Windows e mantém o áudio Java como alternativa. A prévia local confirmou os três toques audíveis, e a reprodução nativa e os 110 testes passaram.

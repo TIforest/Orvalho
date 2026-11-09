@@ -11,13 +11,24 @@ final class SomAlerta {
     private SomAlerta() {}
     static void tocarFimExercicio() {
         Thread audio=new Thread(()->{
-            try(var entrada=AudioSystem.getAudioInputStream(SomAlerta.class.getResource("/alongamento/fim-exercicio.wav"));
-                Clip clip=AudioSystem.getClip()){
-                var terminou=new CountDownLatch(1);
-                clip.addLineListener(e->{if(e.getType()==LineEvent.Type.STOP)terminou.countDown();});
-                clip.open(entrada);clip.start();terminou.await(1,TimeUnit.SECONDS);
+            var log=System.getLogger(SomAlerta.class.getName());
+            try{
+                var recurso=SomAlerta.class.getResource("/alongamento/fim-exercicio.wav");
+                if(recurso==null)throw new IOException("Sinal de fim ausente.");
+                byte[] wav;
+                try(var in=recurso.openStream()){wav=in.readAllBytes();}
+                if(SomWindows.reproduzir(wav)){
+                    log.log(System.Logger.Level.DEBUG,"Sinal reproduzido pela saída nativa do Windows.");
+                    return;
+                }
+                try(var entrada=AudioSystem.getAudioInputStream(new java.io.ByteArrayInputStream(wav));
+                    Clip clip=AudioSystem.getClip()){
+                    var terminou=new CountDownLatch(1);
+                    clip.addLineListener(e->{if(e.getType()==LineEvent.Type.STOP)terminou.countDown();});
+                    clip.open(entrada);clip.start();terminou.await(1,TimeUnit.SECONDS);
+                }
             }catch(InterruptedException e){Thread.currentThread().interrupt();}
-            catch(Exception e){System.getLogger(SomAlerta.class.getName()).log(System.Logger.Level.DEBUG,"Sinal de fim indisponível",e);}
+            catch(Exception e){log.log(System.Logger.Level.WARNING,"Sinal de fim indisponível",e);}
         },"orvalho-fim-exercicio");audio.setDaemon(true);audio.start();
     }
     static void tocarAlongamento() {
