@@ -94,7 +94,8 @@ class AlongamentoTest {
                 iniciar.doClick(0);assertFalse(iniciar.isEnabled());
                 tempo.addAndGet(1_000_000_000L);p.atualizarTempo();assertEquals("00:59",contagem.getText());
                 iniciar.doClick(0);p.atualizarTempo();assertEquals("00:59",contagem.getText());
-                for(int segundo:new int[]{18,38,58}){
+                // Um salto de quadro não deve silenciar o fim do primeiro exercício.
+                for(int segundo:new int[]{19,38,58}){
                     tempo.set((60L+segundo)*1_000_000_000L);p.atualizarTempo();p.atualizarTempo();
                 }
                 assertEquals(3,sinais.get());

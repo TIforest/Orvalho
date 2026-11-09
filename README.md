@@ -357,3 +357,7 @@ Publicação concluída em https://orvalho-forest.pages.dev com instalador assin
 Os avisos de 10h e 15h, de segunda a sexta no horário de Brasília, exibem a mesma parte do dia. A sequência alterna a cada dia útil, começando na parte 1 em 09/11/2026. Iniciar abre o vídeo guiado e começa a contagem de um minuto. Três toques indicam o fim dos exercícios, nos segundos 18, 38 e 58. Os quadros dos vídeos e o som estão em src/main/resources/alongamento e são reproduzidos localmente, sem depender de um player externo. A prévia em Configurações usa a parte do dia.
 
 Publicada no canal empresa, com 110 testes aprovados, instalador assinado e download público verificado.
+
+## Correção dos toques de alongamento — 1.2.31 — 09/11/2026
+
+O sinal de fim do exercício também dispara se a interface pular o segundo exato e ainda estiver dentro da transição de dois segundos. Isso evita perder o toque em atrasos breves e não repete sinais antigos. A suíte da versão passou com 110 testes.

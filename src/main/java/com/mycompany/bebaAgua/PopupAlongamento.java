@@ -96,8 +96,12 @@ final class PopupAlongamento extends JDialog {
         }
         if(decorrido==ultimoQuadro)return;
         try{
+            // O timer pode avançar mais de um segundo se a interface estiver ocupada.
+            // Toca ao cruzar o início da transição, sem repetir sinais antigos.
+            for(int fim=18;fim<VideoAlongamento.DURACAO;fim+=20){
+                if(ultimoQuadro<fim && decorrido>=fim && decorrido<fim+2)sinal.run();
+            }
             mostrarQuadro(decorrido);
-            if(decorrido==18||decorrido==38||decorrido==58)sinal.run();
         }catch(java.io.IOException erro){timer.stop();video=null;situacao.setText("Não foi possível continuar o vídeo.");}
     }
     private void mostrarQuadro(int segundo)throws java.io.IOException{
