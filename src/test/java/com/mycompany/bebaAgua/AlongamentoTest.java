@@ -69,18 +69,36 @@ class AlongamentoTest {
             }finally{popup.dispose();modal.dispose();dono.dispose();}
         });
     }
+    @Test void alternaPartesEntreDiasUteisInclusiveDepoisDoFimDeSemana(){
+        var segunda=LocalDate.of(2026,11,9);
+        assertEquals(1,VideoAlongamento.parteDoDia(segunda));
+        assertEquals(2,VideoAlongamento.parteDoDia(segunda.plusDays(1)));
+        assertEquals(1,VideoAlongamento.parteDoDia(segunda.plusDays(4)));
+        assertEquals(2,VideoAlongamento.parteDoDia(segunda.plusWeeks(1)));
+    }
+    @Test void ambasAsPartesTemTodosOsQuadros()throws Exception{
+        for(int parte=1;parte<=2;parte++){
+            var video=new VideoAlongamento(parte);
+            for(int i=0;i<60;i++)assertEquals(768,video.quadro(i).getWidth());
+        }
+    }
     @Test void contagemSoComecaAoIniciarNaoReiniciaEParaAoFechar()throws Exception{
         SwingUtilities.invokeAndWait(()->{
             var tempo=new java.util.concurrent.atomic.AtomicLong();
-            var p=new PopupAlongamento(false,false,true,tempo::get);
+            var sinais=new AtomicInteger();
+            var p=new PopupAlongamento(false,false,true,1,tempo::get,sinais::incrementAndGet);
             try {
                 var contagem=NovosControlesTest.achar(p,JLabel.class,"contagemAlongamento");
                 var iniciar=NovosControlesTest.achar(p,JButton.class,"Iniciar");
-                tempo.set(60_000_000_000L);p.atualizarTempo();assertEquals("02:00",contagem.getText());
+                tempo.set(60_000_000_000L);p.atualizarTempo();assertEquals("01:00",contagem.getText());
                 iniciar.doClick(0);assertFalse(iniciar.isEnabled());
-                tempo.addAndGet(61_000_000_000L);p.atualizarTempo();assertEquals("00:59",contagem.getText());
+                tempo.addAndGet(1_000_000_000L);p.atualizarTempo();assertEquals("00:59",contagem.getText());
                 iniciar.doClick(0);p.atualizarTempo();assertEquals("00:59",contagem.getText());
-                tempo.addAndGet(59_000_000_000L);p.atualizarTempo();assertEquals("00:00",contagem.getText());
+                for(int segundo:new int[]{18,38,58}){
+                    tempo.set((60L+segundo)*1_000_000_000L);p.atualizarTempo();p.atualizarTempo();
+                }
+                assertEquals(3,sinais.get());
+                tempo.set(120_000_000_000L);p.atualizarTempo();assertEquals("00:00",contagem.getText());
                 assertEquals("Concluído",iniciar.getText());assertTrue(p.isDisplayable());
                 tempo.addAndGet(60_000_000_000L);p.atualizarTempo();assertEquals("00:00",contagem.getText());
                 p.getRootPane().getDefaultButton().doClick(0);assertFalse(p.isDisplayable());

@@ -351,3 +351,9 @@ Versão mantida em 1.2.28. Não publicado no Cloudflare.
 Versão autorizada para disponibilizar os alertas de alongamento no canal empresa. Segunda a sexta às 10h e 15h de Brasília; Iniciar dispara contagem de dois minutos e OK fecha o aviso. O código desta implementação acompanha a publicação no GitHub. Não registra presença nem altera registros de água.
 
 Publicação concluída em https://orvalho-forest.pages.dev com instalador assinado e 108 testes aprovados. Manifesto autenticado, download completo e SHA-256 verificados. Atualização automática disponível para versões anteriores com o app aberto e conectado.
+
+## Alongamento guiado — 1.2.30 — 09/11/2026
+
+Os avisos de 10h e 15h, de segunda a sexta no horário de Brasília, exibem a mesma parte do dia. A sequência alterna a cada dia útil, começando na parte 1 em 09/11/2026. Iniciar abre o vídeo guiado e começa a contagem de um minuto. Três toques indicam o fim dos exercícios, nos segundos 18, 38 e 58. Os quadros dos vídeos e o som estão em src/main/resources/alongamento e são reproduzidos localmente, sem depender de um player externo. A prévia em Configurações usa a parte do dia.
+
+Publicada no canal empresa, com 110 testes aprovados, instalador assinado e download público verificado.
