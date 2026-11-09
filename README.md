@@ -365,3 +365,7 @@ O sinal de fim do exercício também dispara se a interface pular o segundo exat
 ## Reprodução dos toques no Windows — 1.2.32 — 09/11/2026
 
 O sinal de fim dos exercícios usa o reprodutor nativo do Windows e mantém o áudio Java como alternativa. A prévia local confirmou os três toques audíveis, e a reprodução nativa e os 110 testes passaram.
+
+## Toques nas trocas de lado — 1.2.33 — 09/11/2026
+
+O som sinaliza tanto a troca de lado quanto o fim de cada exercício. A parte 1 toca aos 8, 18, 38, 48 e 58 segundos; a flexão do tronco é bilateral. A parte 2 toca aos 8, 18, 28, 38, 48 e 58 segundos. A duração de um minuto e a alternância diária permanecem. Os 111 testes passaram.

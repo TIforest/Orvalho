@@ -13,6 +13,7 @@ final class PopupAlongamento extends JDialog {
     private boolean iniciado;
     private long inicio;
     private final Runnable sinal;
+    private final int[] transicoes;
     private VideoAlongamento video;
     private final JLabel telaVideo=new JLabel();
     private int ultimoQuadro=-1;
@@ -27,6 +28,8 @@ final class PopupAlongamento extends JDialog {
         super((Window)null,"Orvalho — Alongamento",ModalityType.MODELESS);
         this.relogio=relogio;
         this.sinal=sinal;
+        // A flexão do tronco (2º exercício da parte 1) usa os dois lados juntos.
+        transicoes=parte==1?new int[]{8,18,38,48,58}:new int[]{8,18,28,38,48,58};
         timer=new Timer(200,e->atualizarTempo());
         setName("alertaAlongamento");
         setIconImage(new ImageIcon(getClass().getResource("/imagens/agua.png")).getImage());
@@ -98,7 +101,7 @@ final class PopupAlongamento extends JDialog {
         try{
             // O timer pode avançar mais de um segundo se a interface estiver ocupada.
             // Toca ao cruzar o início da transição, sem repetir sinais antigos.
-            for(int fim=18;fim<VideoAlongamento.DURACAO;fim+=20){
+            for(int fim:transicoes){
                 if(ultimoQuadro<fim && decorrido>=fim && decorrido<fim+2)sinal.run();
             }
             mostrarQuadro(decorrido);

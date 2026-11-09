@@ -95,14 +95,31 @@ class AlongamentoTest {
                 tempo.addAndGet(1_000_000_000L);p.atualizarTempo();assertEquals("00:59",contagem.getText());
                 iniciar.doClick(0);p.atualizarTempo();assertEquals("00:59",contagem.getText());
                 // Um salto de quadro não deve silenciar o fim do primeiro exercício.
-                for(int segundo:new int[]{19,38,58}){
+                for(int segundo:new int[]{8,19,28,38,48,58}){
                     tempo.set((60L+segundo)*1_000_000_000L);p.atualizarTempo();p.atualizarTempo();
+                    if(segundo==28)assertEquals(2,sinais.get(),"Flexão do tronco não tem troca de lado");
                 }
-                assertEquals(3,sinais.get());
+                assertEquals(5,sinais.get());
                 tempo.set(120_000_000_000L);p.atualizarTempo();assertEquals("00:00",contagem.getText());
                 assertEquals("Concluído",iniciar.getText());assertTrue(p.isDisplayable());
                 tempo.addAndGet(60_000_000_000L);p.atualizarTempo();assertEquals("00:00",contagem.getText());
                 p.getRootPane().getDefaultButton().doClick(0);assertFalse(p.isDisplayable());
+            }finally{p.dispose();}
+        });
+    }
+    @Test void parteDoisTocaNasTresTrocasENosTresFinais()throws Exception{
+        SwingUtilities.invokeAndWait(()->{
+            var tempo=new java.util.concurrent.atomic.AtomicLong();
+            var sinais=new AtomicInteger();
+            var p=new PopupAlongamento(false,false,true,2,tempo::get,sinais::incrementAndGet);
+            try{
+                NovosControlesTest.achar(p,JButton.class,"Iniciar").doClick(0);
+                int total=0;
+                for(int segundo:new int[]{8,18,28,38,48,58}){
+                    tempo.set((segundo-1L)*1_000_000_000L);p.atualizarTempo();assertEquals(total,sinais.get());
+                    tempo.set(segundo*1_000_000_000L);p.atualizarTempo();p.atualizarTempo();
+                    assertEquals(++total,sinais.get());
+                }
             }finally{p.dispose();}
         });
     }
